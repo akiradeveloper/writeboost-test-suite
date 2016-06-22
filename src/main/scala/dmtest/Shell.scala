@@ -15,7 +15,6 @@ object Shell {
       Left(err)
     }
   }
-
   def run(cmd: String): String = {
     runCommand(cmd) match {
       case Right(o) => o

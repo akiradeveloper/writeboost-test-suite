@@ -3,8 +3,8 @@ package dmtest
 trait Stack {
   def path: String // e.g. /dev/sdb
   def dev = BlockDevice(path)
-  def withDev[A](f: BlockDevice => A): A = {
-    val res = f(dev)
+  def apply[A](f: this.type => A): A = {
+    val res = f(this)
     purge
     res
   }

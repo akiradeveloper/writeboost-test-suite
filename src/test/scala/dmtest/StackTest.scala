@@ -4,13 +4,22 @@ import org.scalatest._
 
 class StackTest extends FunSuite {
   test("loopback") {
-    stack.Loopback.S(Sector.K(16)) withDev { dev =>
-      assert(dev.size === Sector.K(16))
+    stack.Loopback.S(Sector.K(16)) { stack =>
+      assert(stack.dev.size === Sector.K(16))
     }
   }
+  test("pool (algorithm)") {
+    val fa = new stack.Pool.FreeArea(Sector(8))
+    val r0 = fa.getFreeSpace(Sector(2))
+    val r1 = fa.getFreeSpace(Sector(3))
+    fa.release(r1) // merge (3+3)
+    fa.getFreeSpace(Sector(6))
+    fa.release(r0)
+    fa.getFreeSpace(Sector(1))
+  }
   test("pool") {
-    val loopback = stack.Loopback.S(Sector.K(32)) withDev { dev1 =>
-      val pool = new stack.Pool(stack.Direct.S(dev1.path))
+    val loopback = stack.Loopback.S(Sector.K(32)) { s =>
+      val pool = new stack.Pool(s)
       val d1 = stack.Pool.S(pool, Sector.K(18))
       assert(d1.exists)
       val d2 = stack.Pool.S(pool, Sector.K(9))
