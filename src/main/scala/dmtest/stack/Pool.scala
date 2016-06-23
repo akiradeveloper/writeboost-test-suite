@@ -6,7 +6,6 @@ object Pool {
   case class S(pool: Pool, size: Sector) extends Stack {
     private val linear: Linear.S = pool.alloc(size)
     override def terminate: Unit = {
-      linear.purge()
       pool.free(linear)
     }
     override def path: String = linear.path
@@ -57,6 +56,7 @@ class Pool(pool: Stack) {
     EmptyStack().reload(Linear.T(pool, space.start, space.len))
   }
   def free(linearS: Linear.S): Unit = {
+    linearS.purge()
     val space = Range(linearS.start, linearS.len)
     freeArea.release(space)
   }

@@ -33,4 +33,12 @@ class StackTest extends FunSuite {
       assert(d5.exists)
     }
   }
+  test("linear") {
+    stack.Loopback.S(Sector.K(32)) { s =>
+      EmptyStack().reload(stack.Linear.T(s, Sector(0), Sector.K(10))) { s2 =>
+        s2.exists
+      }
+      assert(s.exists)
+    }
+  }
 }
