@@ -18,7 +18,7 @@ class StackTest extends FunSuite {
     fa.getFreeSpace(Sector(1))
   }
   test("pool") {
-    val loopback = stack.Loopback.S(Sector.K(32)) { s =>
+    stack.Loopback.S(Sector.K(32)) { s =>
       val pool = new stack.Pool(s)
       val d1 = stack.Pool.S(pool, Sector.K(18))
       assert(d1.exists)
@@ -36,7 +36,7 @@ class StackTest extends FunSuite {
   test("linear") {
     stack.Loopback.S(Sector.K(32)) { s =>
       EmptyStack().reload(stack.Linear.T(s, Sector(0), Sector.K(10))) { s2 =>
-        s2.exists
+        assert(s2.exists)
       }
       assert(s.exists)
     }

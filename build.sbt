@@ -10,5 +10,7 @@ parallelExecution in Test := false
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test"
+  "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
+  "ch.qos.logback" %  "logback-classic" % "1.1.7",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.4.0"
 )
