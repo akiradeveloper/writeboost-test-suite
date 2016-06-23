@@ -7,5 +7,7 @@ jdk:
 scala:
   - 2.11.6
 sudo: required
+install:
+  - sudo apt-get install xfsprogs
 script:
   - sudo sbt "testOnly dmtest.TravisTest"
