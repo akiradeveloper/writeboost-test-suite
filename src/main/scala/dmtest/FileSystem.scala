@@ -4,7 +4,7 @@ import java.nio.file.{Files, Paths, Path}
 
 object FileSystem {
   case class XFS(stack: Stack) {
-    private def mkfs = s"mkfs.xfs -f ${stack.path}"
+    private def mkfs = Shell(s"mkfs.xfs -f ${stack.path}")
     private def mount: Path = {
       val mp = Paths.get(s"/tmp/${RandNameAllocator.alloc}")
       Files.deleteIfExists(mp)
