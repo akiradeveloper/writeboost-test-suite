@@ -8,7 +8,7 @@ object Pool {
     override def terminate: Unit = {
       pool.free(linear)
     }
-    override def path: String = linear.path
+    override def path = linear.path
   }
   case class Range(start: Sector, len: Sector) extends Ordered[Range] {
     override def compare(that: Range): Int = (this.start.unwrap - that.start.unwrap).toInt

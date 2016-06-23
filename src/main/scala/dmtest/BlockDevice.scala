@@ -1,6 +1,8 @@
 package dmtest
 
-case class BlockDevice(path: String) {
-  def size: Sector = Sector(Shell.run(s"blockdev --getsize ${path}").toLong)
-  override def toString = path
+import java.nio.file.Path
+
+case class BlockDevice(path: Path) {
+  def size: Sector = Sector(Shell(s"blockdev --getsize ${path}").toLong)
+  override def toString = path.toString
 }

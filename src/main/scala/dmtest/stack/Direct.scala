@@ -5,7 +5,7 @@ import java.nio.file.Path
 import dmtest.{Stack, BlockDevice}
 
 object Direct {
-  case class S(path: String) extends Stack {
+  case class S(path: Path) extends Stack {
     override def terminate: Unit = {}
   }
 }

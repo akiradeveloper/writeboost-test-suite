@@ -1,8 +1,9 @@
 package dmtest
 
+import java.nio.file.Path
+
 trait Stack {
-  def path: String // e.g. /dev/sdb
-  def dev = BlockDevice(path)
+  def path: Path // e.g. /dev/sdb
 
   private var _lock = false
   def lock(): Unit = { _lock = true }
@@ -21,7 +22,7 @@ trait Stack {
     purge
     res
   }
-  def exists: Boolean = dev.size.unwrap > 0
+  def exists: Boolean = BlockDevice(path).size > Sector(0)
 
   protected def terminate(): Unit
   protected def subsidiaries: Iterable[Stack] = Iterable.empty

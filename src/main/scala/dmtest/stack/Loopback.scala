@@ -1,13 +1,20 @@
 package dmtest.stack
 
-import java.nio.file.{Files, Path}
+import java.nio.file.{Paths, Files, Path}
 
 import dmtest._
 
 object Loopback {
-  // TODO should check /dev/loopN is available (use losetup -f)
-  private def attach(size: Sector): (String, Path) = ???
-  private def detach(path: String) = ???
+  private def attach(size: Sector): (Path, Path) = {
+    val emptyLoopDevice = Paths.get(Shell("losetup -f"))
+    val tmpFile = Paths.get(s"/tmp/${RandNameAllocator.alloc}")
+    Shell(s"dd if=/dev/zero of=${tmpFile} bs=512 count=${size}")
+    Shell(s"losetup ${emptyLoopDevice} ${tmpFile}")
+    (emptyLoopDevice, tmpFile)
+  }
+  private def detach(path: Path) = {
+    Shell(s"losetup -d ${path}")
+  }
   def allocator(size: Sector): S = {
     new S(size)
   }
