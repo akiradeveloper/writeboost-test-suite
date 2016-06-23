@@ -8,6 +8,6 @@ scala:
   - 2.11.6
 sudo: required
 install:
-  - sudo apt-get install xfsprogs
+  - sudo apt-get -y install xfsprogs
 script:
   - sudo sbt "testOnly dmtest.TravisTest"
