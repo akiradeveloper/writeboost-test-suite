@@ -1,2 +1,2 @@
-selftest:
+test:
 	sbt "testOnly dmtest.SelfTest"
