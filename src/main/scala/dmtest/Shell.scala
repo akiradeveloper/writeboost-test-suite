@@ -12,7 +12,7 @@ object Shell {
     if (err == 0) {
       Right(os.toString.trim)
     } else {
-      logger.error(s"err: ${err}")
+      logger.error(s"sh> err: ${err}")
       Left(err)
     }
   }

@@ -13,6 +13,7 @@ object FileSystem {
       mp
     }
     private def umount(path: Path) = {
+      Shell(s"umount ${path}")
       Files.deleteIfExists(path)
     }
     def apply[A](f: Path => A): A = {
