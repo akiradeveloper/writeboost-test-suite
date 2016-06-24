@@ -2,7 +2,7 @@ package dmtest.stack
 
 import java.nio.file.Path
 
-import dmtest.{Stack, BlockDevice}
+import dmtest.Stack
 
 object Direct {
   case class S(path: Path) extends Stack {

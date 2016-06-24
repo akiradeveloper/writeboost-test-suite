@@ -49,8 +49,7 @@ object Pool {
 
 class Pool(pool: Stack) {
   import Pool._
-  val device = BlockDevice(pool.path)
-  val freeArea = new FreeArea(device.size)
+  val freeArea = new FreeArea(pool.bdev.size)
   def alloc(size: Sector): Linear.S = {
     val space = freeArea.getFreeSpace(size)
     EmptyStack().reload(Linear.T(pool, space.start, space.len))

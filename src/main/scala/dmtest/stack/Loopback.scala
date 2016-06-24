@@ -7,7 +7,7 @@ import dmtest._
 object Loopback {
   private def attach(size: Sector): (Path, Path) = {
     val emptyLoopDevice = Paths.get(Shell("losetup -f"))
-    val tmpFile = Paths.get(s"/tmp/${RandNameAllocator.alloc}")
+    val tmpFile = Paths.get(s"/tmp/${RandName.alloc}")
     Shell(s"dd if=/dev/zero of=${tmpFile} bs=512 count=${size}")
     Shell(s"losetup ${emptyLoopDevice} ${tmpFile}")
     (emptyLoopDevice, tmpFile)

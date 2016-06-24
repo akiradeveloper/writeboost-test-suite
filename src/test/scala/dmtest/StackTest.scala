@@ -5,7 +5,7 @@ import org.scalatest._
 class StackTest extends FunSuite {
   test("loopback") {
     stack.Loopback.S(Sector.K(16)) { stack =>
-      assert(BlockDevice(stack.path).size === Sector.K(16))
+      assert(stack.bdev.size === Sector.K(16))
     }
   }
   test("pool (algorithm)") {

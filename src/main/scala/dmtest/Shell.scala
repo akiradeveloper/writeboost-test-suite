@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream
 import scala.sys.process._
 
 object Shell {
-  private def runCommand(cmd: String): Either[Int, String] = {
+  private def sync(cmd: ProcessBuilder): Either[Int, String] = {
     logger.debug(s"sh> ${cmd}")
     val os = new ByteArrayOutputStream()
     val err = (cmd #> os).!
@@ -16,8 +16,8 @@ object Shell {
       Left(err)
     }
   }
-  def apply(cmd: String): String = {
-    runCommand(cmd) match {
+  def apply(cmd: ProcessBuilder): String = {
+    sync(cmd) match {
       case Right(o) => o
     }
   }

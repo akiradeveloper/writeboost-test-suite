@@ -1,6 +1,6 @@
 package dmtest
 
-object RandNameAllocator {
+object RandName {
   val PREFIX = "dmtest"
   val m = scala.collection.mutable.Set[String]()
   var i = 0

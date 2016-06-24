@@ -3,7 +3,9 @@ package dmtest
 import java.nio.file.Path
 
 trait Stack {
-  def path: Path // e.g. /dev/sdb
+  protected def path: Path // e.g. /dev/sdb
+
+  def bdev: BlockDevice = BlockDevice(path)
 
   // TODO should use counting because same stack can be nested (although quite uncommon)
   // stack1 { s =>
@@ -27,7 +29,7 @@ trait Stack {
     purge
     res
   }
-  def exists: Boolean = BlockDevice(path).size > Sector(0)
+  def exists: Boolean = bdev.size > Sector(0)
 
   protected def terminate(): Unit
   protected def subsidiaries: Iterable[Stack] = Iterable.empty
