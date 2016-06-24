@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 $script = <<EOF
-sudo yum -y update
+sudo yum -y update --exclude=kernel*
 
 wget --no-check-certificate --no-cookies - --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u65-b17/jdk-8u65-linux-x64.rpm
 sudo yum localinstall -y jdk-8u65-linux-x64.rpm
@@ -13,7 +13,7 @@ sudo yum -y install sbt
 sudo yum -y install epel-release.noarch
 sudo yum -y install kernel-devel kernel-headers dkms
 sudo yum -y groupinstall "Development Tools"
-sudo yum update
+sudo yum -y update --exclude=kernel*
 EOF
 
 Vagrant.configure(2) do |config|
