@@ -6,4 +6,5 @@ class DMState(val name: String) {
   def reload(table: String) = Shell(s"echo ${table} | dmsetup reload ${name}")
   def suspend() = Shell(s"dmsetup suspend ${name}")
   def resume() = Shell(s"dmsetup resume ${name}")
+  def table() = Shell(s"dmsetup table ${name}")
 }

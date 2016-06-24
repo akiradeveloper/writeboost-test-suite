@@ -22,6 +22,7 @@ object FileSystem {
       res
     }
 
+    // TODO separate formatting and mounting
     mkfs
   }
 }
