@@ -41,4 +41,12 @@ class StackTest extends FunSuite {
       assert(s.exists)
     }
   }
+  test("luks") {
+    stack.Loopback.S(Sector.K(32)) { s =>
+      stack.Luks.S(s) { s2 =>
+        Shell(s"dd if=/dev/urandom of=${s.bdev.path}") // wipe
+        assert(s2.exists)
+      }
+    }
+  }
 }
