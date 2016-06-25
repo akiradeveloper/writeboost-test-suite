@@ -15,14 +15,14 @@ object Loopback {
   private def detach(path: Path) = {
     Shell(s"losetup -d ${path}")
   }
-  def allocator(size: Sector): S = {
-    new S(size)
+  def allocator(size: Sector) = {
+    new Loopback(size)
   }
-  case class S(size: Sector) extends Stack {
-    val (path, filePath) = attach(size)
-    override def terminate = {
-      detach(path)
-      Files.delete(filePath)
-    }
+}
+case class Loopback(size: Sector) extends Stack {
+  val (path, filePath) = Loopback.attach(size)
+  override def terminate = {
+    Loopback.detach(path)
+    Files.delete(filePath)
   }
 }

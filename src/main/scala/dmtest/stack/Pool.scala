@@ -4,7 +4,7 @@ import dmtest._
 
 object Pool {
   case class S(pool: Pool, size: Sector) extends Stack {
-    private val linear: Linear.S = pool.alloc(size)
+    private val linear: Linear = pool.alloc(size)
     override def terminate: Unit = {
       pool.free(linear)
     }
@@ -50,11 +50,11 @@ object Pool {
 class Pool(pool: Stack) {
   import Pool._
   val freeArea = new FreeArea(pool.bdev.size)
-  def alloc(size: Sector): Linear.S = {
+  def alloc(size: Sector): Linear = {
     val space = freeArea.getFreeSpace(size)
-    EmptyStack().reload(Linear.T(pool, space.start, space.len))
+    EmptyStack().reload(Linear.Table(pool, space.start, space.len))
   }
-  def free(linearS: Linear.S): Unit = {
+  def free(linearS: Linear): Unit = {
     linearS.purge()
     val space = Range(linearS.start, linearS.len)
     freeArea.release(space)
