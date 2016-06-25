@@ -1,12 +1,23 @@
 package dmtest
 
-import java.io.{FileWriter, File}
+object DMState {
+  case class Table(start: Sector, len: Sector, target: String, args: Array[String])
+  case class Status(start: Sector, len: Sector, target: String, args: Array[String])
+}
 
 class DMState(val name: String) {
+  import DMState._
   def create() = Shell(s"dmsetup create ${name} --notable")
   def remove() = Shell(s"dmsetup remove ${name}")
   def reload(table: String) = Shell(s"dmsetup reload ${name} ${TempFile(table)}")
   def suspend() = Shell(s"dmsetup suspend ${name}")
   def resume() = Shell(s"dmsetup resume ${name}")
-  def table() = Shell(s"dmsetup table ${name}")
+  def table: Table = {
+    val line = Shell(s"dmsetup table ${name}").split(" ")
+    Table(Sector(line(0).toLong), Sector(line(1).toLong), line(2), line.drop(3))
+  }
+  def status(): Status = {
+    val line = Shell(s"dmsetup status ${name}").split(" ")
+    Status(Sector(line(0).toLong), Sector(line(1).toLong), line(2), line.drop(3))
+  }
 }

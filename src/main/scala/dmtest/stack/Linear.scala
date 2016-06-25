@@ -11,7 +11,6 @@ object Linear {
   }
   case class S(delegate: DMStack, table: T) extends DMStackDecorator[S] {
     override def subsidiaries = Seq(table.backing)
-
     def start = table.start
     def len = table.len
   }
