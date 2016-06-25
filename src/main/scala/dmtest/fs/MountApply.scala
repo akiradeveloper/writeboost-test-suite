@@ -20,8 +20,10 @@ trait MountApply {
   }
   def apply[A](f: Path => A): A = {
     val mp = mount
-    val res = f(mp)
-    umount(mp)
-    res
+    try {
+      f(mp)
+    } finally {
+      umount(mp)
+    }
   }
 }

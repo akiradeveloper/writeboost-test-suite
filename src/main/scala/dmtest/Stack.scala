@@ -22,13 +22,24 @@ trait Stack {
   //   } // stack1 isn't removed because it's protected
   // } // stack1 is removed here
   def apply[A](f: this.type => A): A = {
+    val resource: this.type = this
     lock
-    val res = f(this)
-    unlock
-
-    purge
-    res
+    try {
+      f(resource)
+    } finally {
+      unlock
+      purge
+    }
   }
+//  def acquire: this.type = {
+//    lock
+//    this
+//  }
+//  def release = { a: this.type =>
+//    unlock
+//    purge
+//  }
+//  def apply[A](f: this.type => A): A = Resource(acquire)(release)(f)
   def exists: Boolean = bdev.size > Sector(0)
 
   protected def terminate(): Unit
