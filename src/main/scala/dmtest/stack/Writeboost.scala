@@ -7,9 +7,14 @@ object Writeboost {
   object Table {
     def parse(gTable: DMState.Table): Table = ???
   }
-  case class Table(backingDev: Stack, cacheDev: Stack) extends DMTable[Writeboost] {
-    override def f: (DMStack) => Writeboost = ???
-    override def line: String = ???
+  type TunableKind = String
+  case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[TunableKind, Int] = Map.empty) extends DMTable[Writeboost] {
+    override def f: (DMStack) => Writeboost = (a: DMStack) => Writeboost(a, this)
+    override def line: String = {
+      val nrTunables = tunables.size * 2
+      val asList = tunables map { case (k, v) => s"${k} ${v}" } mkString " "
+      s"0 ${backingDev.bdev.size} writeboost ${backingDev.bdev.path} ${cacheDev.bdev.path} ${nrTunables} ${asList}"
+    }
   }
   object Status {
     def parse(status: DMState.Status): Status = {
@@ -56,15 +61,15 @@ object Writeboost {
     }
   }
   case class Status(
-    cursor_pos: Int,
-    nr_cache_blocks: Int,
-    nr_segments: Int,
-    current_id: Int,
-    last_flushed_id: Int,
-    last_writeback_id: Int,
-    nr_dirty_cache_blocks: Int,
+    cursorPos: Int,
+    nrCacheBlocks: Int,
+    nrSegments: Int,
+    currentId: Int,
+    lastFlushedId: Int,
+    lastWritebackId: Int,
+    nrDirtyCacheBlocks: Int,
     stat: Map[StatKey, Int],
-    tunables: Map[String, Int]
+    tunables: Map[TunableKind, Int]
   )
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
