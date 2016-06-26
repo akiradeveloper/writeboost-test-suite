@@ -46,7 +46,7 @@ object Writeboost {
         q.dequeue.toInt,
         {
           val result = mutable.Map[StatKey, Int]()
-          for (i <- 0 to 16) {
+          for (i <- 0 until 16) {
             val k = StatKey.fromIndex(i)
             val v = q.dequeue.toInt
             result += k -> v
