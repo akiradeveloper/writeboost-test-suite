@@ -4,10 +4,10 @@ import java.nio.ByteBuffer
 import java.nio.file.Files
 
 import dmtest.fs.{EXT4, XFS}
-import dmtest.stack.Loopback
+import dmtest.stack.{Memory, Loopback}
 import org.scalatest.FunSuite
 
-class FileSystemTest extends FunSuite {
+class FileSystemTest extends DMTestSuite {
   test("mkfs.xfs") {
     Loopback(Sector.M(16)) { s =>
       XFS.format(s)
@@ -22,6 +22,15 @@ class FileSystemTest extends FunSuite {
       EXT4.format(s)
       EXT4.Mount(s) { mp =>
         val f = mp.resolve("b")
+        Files.createFile(f)
+      }
+    }
+  }
+  test("mkfs (inmem)") {
+    Memory(Sector.M(16)) { s =>
+      XFS.format(s)
+      XFS.Mount(s) { mp =>
+        val f = mp.resolve("a")
         Files.createFile(f)
       }
     }

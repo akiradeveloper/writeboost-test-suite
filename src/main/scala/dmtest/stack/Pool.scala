@@ -46,8 +46,7 @@ object Pool {
     }
   }
 }
-
-class Pool(pool: Stack) {
+case class Pool(pool: Stack) {
   import Pool._
   val freeArea = new FreeArea(pool.bdev.size)
   def alloc(size: Sector): Linear = {

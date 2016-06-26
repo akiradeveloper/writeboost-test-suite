@@ -1,8 +1,9 @@
 package dmtest
 
+import dmtest.stack.Memory
 import org.scalatest._
 
-class StackTest extends FunSuite {
+class StackTest extends DMTestSuite {
   test("loopback") {
     stack.Loopback(Sector.K(16)) { stack =>
       assert(stack.bdev.size === Sector.K(16))
@@ -45,6 +46,35 @@ class StackTest extends FunSuite {
     stack.Loopback(Sector.M(16)) { s =>
       stack.Luks(s) { s2 =>
         Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
+        assert(s2.exists)
+      }
+    }
+  }
+  test("memory") {
+    Memory(Sector.M(1)) { s =>
+      assert(s.exists)
+    }
+  }
+  test("memory (nesting)") {
+    Memory(Sector.M(1)) { s1 =>
+      Memory(Sector.K(16)) {s2 =>
+        assert(s1.exists)
+        assert(s2.exists)
+        assert(s1.bdev.path != s2.bdev.path)
+      }
+    }
+  }
+  test("test <> op") {
+    val res = 100 <> 10
+    if (isDebugMode)
+      assert(res === 10)
+    else
+      assert(res === 100)
+  }
+  test("suite pool allocate") {
+    slowDevice(Sector.M(16 <> 4)) { s1 =>
+      fastDevice(Sector.M(2 <> 1)) { s2 =>
+        assert(s1.exists)
         assert(s2.exists)
       }
     }

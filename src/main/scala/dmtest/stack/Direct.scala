@@ -5,7 +5,8 @@ import java.nio.file.Path
 import dmtest.Stack
 
 object Direct {
-  case class S(path: Path) extends Stack {
-    override def terminate: Unit = {}
-  }
+
+}
+case class Direct(path: Path) extends Stack {
+  override def terminate: Unit = {} // this stack doesn't need to lock
 }
