@@ -8,11 +8,26 @@ object Writeboost {
     def parse(gTable: DMState.Table): Table = ???
   }
   type TunableKind = String
+  val TunableKinds = Seq(
+    "writeback_threshold",
+    "nr_max_batched_writeback",
+    "update_sb_record_interval",
+    "sync_data_interval",
+    "read_cache_threshold",
+    "write_through_mode"
+  )
+
+  def validateTunableKind(x: TunableKind): Unit = {
+    if (!TunableKinds.contains(x)) {
+      logger.error(s"tunable key ${x} isn't defined")
+      assert(false)
+    }
+  }
   case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[TunableKind, Int] = Map.empty) extends DMTable[Writeboost] {
     override def f: (DMStack) => Writeboost = (a: DMStack) => Writeboost(a, this)
     override def line: String = {
       val nrTunables = tunables.size * 2
-      val asList = tunables map { case (k, v) => s"${k} ${v}" } mkString " "
+      val asList = tunables map { case (k, v) => validateTunableKind(k); s"${k} ${v}" } mkString " "
       s"0 ${backingDev.bdev.size} writeboost ${backingDev.bdev.path} ${cacheDev.bdev.path} ${nrTunables} ${asList}"
     }
   }
@@ -37,11 +52,13 @@ object Writeboost {
           }
           result.toMap
         },
+        q.dequeue.toInt,
         {
           val result = mutable.Map[String, Int]()
           q.dequeue // discard nr_tunables
           while (!q.isEmpty) {
             val k = q.dequeue()
+            validateTunableKind(k)
             val v = q.dequeue().toInt
             result += k -> v
           }
@@ -50,10 +67,7 @@ object Writeboost {
       )
     }
   }
-  case class StatKey(write: Boolean, hit: Boolean, onBuffer: Boolean, fullSize: Boolean) {
-    def i(b: Boolean, shift: Int) = (if (b) 1 else 0) << shift
-    def toIndex = i(write, 3) + i(hit, 2) + i(onBuffer, 1) + i(fullSize, 0)
-  }
+  case class StatKey(write: Boolean, hit: Boolean, onBuffer: Boolean, fullSize: Boolean)
   object StatKey {
     def fromIndex(i: Int): StatKey = {
       def k(shift: Int): Boolean = (i & (1 << shift)) != 0
@@ -69,9 +83,10 @@ object Writeboost {
     lastWritebackId: Int,
     nrDirtyCacheBlocks: Int,
     stat: Map[StatKey, Int],
+    nrPartialFlushed: Int,
     tunables: Map[TunableKind, Int]
   )
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
-  override def subsidiaries = Seq(table.backingDev, table.cacheDev)
+  override def subStacks = Seq(table.backingDev, table.cacheDev)
 }

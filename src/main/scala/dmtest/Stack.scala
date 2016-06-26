@@ -43,7 +43,7 @@ trait Stack {
   def exists: Boolean = bdev.size > Sector(0)
 
   protected def terminate(): Unit
-  protected def subsidiaries: Iterable[Stack] = Iterable.empty
+  protected def subStacks: Iterable[Stack] = Iterable.empty
 
   final def purge(): Unit = {
     if (locked) {
@@ -51,6 +51,6 @@ trait Stack {
       return
     }
     terminate()
-    subsidiaries.foreach(_.purge())
+    subStacks.foreach(_.purge())
   }
 }

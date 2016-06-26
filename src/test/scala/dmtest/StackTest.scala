@@ -87,4 +87,24 @@ class StackTest extends DMTestSuite {
       logger.info(t2.line)
     }
   }
+  test("status line parse (writeboost)") {
+    var args: Array[String] = (1 to 24).toArray.map(_.toString)
+    args ++= Array("10",
+      "writeback_threshold", "25",
+      "nr_max_batched_writeback", "26",
+      "update_sb_record_interval", "27",
+      "sync_data_interval", "28",
+      "read_cache_threshold", "29")
+    val status = DMState.Status(
+      Sector(0),
+      Sector(100),
+      "writeboost",
+      args
+    )
+    val res = Writeboost.Status.parse(status)
+    assert(res.cursorPos === 1)
+    assert(res.stat(Writeboost.StatKey(true, false, true, false)) === 17)
+    assert(res.nrPartialFlushed === 24)
+    assert(res.tunables("sync_data_interval") === 28)
+  }
 }
