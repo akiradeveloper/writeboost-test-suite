@@ -13,7 +13,7 @@ case class Memory(size: Sector) extends Stack {
   private val filePath = s"${dirPath}/inmem"
 
   Shell(s"mkdir -p ${dirPath}")
-  Shell(s"mount -t tmpfs size=${512 * size.unwrap} ${name} ${dirPath}")
+  Shell(s"mount -t tmpfs -o size=${512 * size.unwrap} ${name} ${dirPath}")
 
   Shell(s"dd if=/dev/zero of=${filePath} bs=512 count=${size}")
   private val loopDevice = Paths.get(Shell("losetup -f"))
