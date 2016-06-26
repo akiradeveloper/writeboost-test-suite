@@ -82,9 +82,9 @@ class StackTest extends DMTestSuite {
   test("table line (writeboost)") {
     Memory(Sector.M(16)) { s =>
       val t1 = Writeboost.Table(s, s)
-      println(t1.line)
+      logger.info(t1.line)
       val t2 = Writeboost.Table(s, s, Map("writeback_threshold" -> 50, "nr_max_batched_writeback" -> 128))
-      println(t2.line)
+      logger.info(t2.line)
     }
   }
 }
