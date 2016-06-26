@@ -20,4 +20,5 @@ class DMState(val name: String) {
     val line = Shell(s"dmsetup status ${name}").split(" ")
     Status(Sector(line(0).toLong), Sector(line(1).toLong), line(2), line.drop(3))
   }
+  def message(msg: String) = Shell(s"dmsetup message ${name} 0 ${msg}")
 }

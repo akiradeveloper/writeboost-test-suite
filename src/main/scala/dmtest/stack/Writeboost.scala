@@ -23,6 +23,7 @@ object Writeboost {
       assert(false)
     }
   }
+  def sweepCaches(cacheDev: Stack) = Shell(s"dd if=/dev/zero of=${cacheDev.bdev.path} oflag=direct bs=512 count=1")
   case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[TunableKind, Int] = Map.empty) extends DMTable[Writeboost] {
     override def f: (DMStack) => Writeboost = (a: DMStack) => Writeboost(a, this)
     override def line: String = {
@@ -89,4 +90,6 @@ object Writeboost {
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
   override def subStacks = Seq(table.backingDev, table.cacheDev)
+  def dropCaches(): Unit = dm.message("drop_caches")
+  def clearStats(): Unit = dm.message("clear_stats")
 }
