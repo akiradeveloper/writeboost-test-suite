@@ -102,6 +102,7 @@ class StackTest extends DMTestSuite {
       args
     )
     val res = Writeboost.Status.parse(status)
+    logger.debug(s"parsed result: ${res}")
     assert(res.cursorPos === 1)
     assert(res.stat(Writeboost.StatKey(true, false, true, false)) === 17)
     assert(res.nrPartialFlushed === 24)
