@@ -23,6 +23,6 @@ case class Loopback(size: Sector) extends Stack {
   val (path, filePath) = Loopback.attach(size)
   override def terminate = {
     Loopback.detach(path)
-    Files.delete(filePath)
+    Files.deleteIfExists(filePath)
   }
 }
