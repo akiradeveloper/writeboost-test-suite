@@ -12,6 +12,7 @@ object RandomPattern {
 
     val data = ByteBuffer.allocate(len)
     data.put(d)
+    data.flip()
     data
   }
   // byte by byte comparison
@@ -50,6 +51,7 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
     blocks.foreach { b =>
       chan.position(b.offset.toB)
       chan.write(b.data)
+      b.data.rewind()
     }
     chan.close
   }
@@ -60,6 +62,7 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
       val buf = ByteBuffer.allocate(blockSize.toB.toInt)
       chan.position(b.offset.toB)
       chan.read(buf)
+      buf.flip()
       if (!b.matchBytes(buf)) {
         logger.error(s"offset ${b.offset} didn't match")
         success = false
