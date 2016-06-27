@@ -15,7 +15,7 @@ trait MountApply {
     mp
   }
   private def umount(path: Path) = {
-    Shell(s"umount ${path}")
+    Shell(s"umount -f ${path}")
     Files.deleteIfExists(path)
   }
   def apply[A](f: Path => A): A = {
