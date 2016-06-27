@@ -11,5 +11,6 @@ case class Sector(unwrap: Long) extends Ordered[Sector] {
   def toB: Long = unwrap << 9
   def +(that: Sector) = Sector(unwrap + that.unwrap)
   def -(that: Sector) = Sector(unwrap - that.unwrap)
+  def *(a: Long) = Sector(unwrap * a)
   override def compare(that: Sector): Int = (unwrap - that.unwrap).toInt
 }

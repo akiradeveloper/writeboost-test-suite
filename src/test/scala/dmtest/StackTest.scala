@@ -64,7 +64,12 @@ class StackTest extends DMTestSuite {
       }
     }
   }
-  test("test <> op") {
+  test("stack (not leaking)") {
+    (0 until 100000).foreach { _ => // 100GB in total
+      Memory(Sector.M(1)) { _ => }
+    }
+  }
+  test("<> op") {
     val res = 100 <> 10
     if (isDebugMode)
       assert(res === 10)
