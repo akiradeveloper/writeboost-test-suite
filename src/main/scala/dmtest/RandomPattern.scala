@@ -1,7 +1,7 @@
 package dmtest
 
 import java.nio.ByteBuffer
-import java.nio.file.Files
+import java.nio.file.{StandardOpenOption, Files}
 
 import scala.util.Random
 
@@ -46,7 +46,7 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
     writeBlocks(delta)
   }
   def writeBlocks(blocks: Iterable[DeltaBlock]) = {
-    val chan = Files.newByteChannel(stack.bdev.path)
+    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE)
     blocks.foreach { b =>
       chan.position(b.offset.toB)
       chan.write(b.data)
@@ -54,7 +54,7 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
     chan.close
   }
   def verify(): Boolean = {
-    val chan = Files.newByteChannel(stack.bdev.path)
+    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.READ)
     var success = true
     delta.foreach { b =>
       val buf = ByteBuffer.allocate(blockSize.toB.toInt)
