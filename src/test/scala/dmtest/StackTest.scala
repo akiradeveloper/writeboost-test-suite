@@ -4,12 +4,12 @@ import dmtest.stack.{Writeboost, Memory}
 import org.scalatest._
 
 class StackTest extends DMTestSuite {
-  test("loopback") {
+  test("loopback") { _ =>
     stack.Loopback(Sector.K(16)) { stack =>
       assert(stack.bdev.size === Sector.K(16))
     }
   }
-  test("pool (algorithm)") {
+  test("pool (algorithm)") { _ =>
     val fa = new stack.Pool.FreeArea(Sector(8))
     val r0 = fa.getFreeSpace(Sector(2))
     val r1 = fa.getFreeSpace(Sector(3))
@@ -18,7 +18,7 @@ class StackTest extends DMTestSuite {
     fa.release(r0)
     fa.getFreeSpace(Sector(1))
   }
-  test("pool") {
+  test("pool") { _ =>
     stack.Loopback(Sector.K(32)) { s =>
       val pool = new stack.Pool(s)
       val d1 = stack.Pool.S(pool, Sector.K(18))
@@ -34,7 +34,7 @@ class StackTest extends DMTestSuite {
       assert(d5.exists)
     }
   }
-  test("linear") {
+  test("linear") { _ =>
     stack.Loopback(Sector.K(32)) { s =>
       EmptyStack().reload(stack.Linear.Table(s, Sector(0), Sector.K(10))) { s2 =>
         assert(s2.exists)
@@ -42,7 +42,7 @@ class StackTest extends DMTestSuite {
       assert(s.exists)
     }
   }
-  test("luks") {
+  test("luks") { _ =>
     stack.Loopback(Sector.M(16)) { s =>
       stack.Luks(s) { s2 =>
         Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
@@ -50,12 +50,12 @@ class StackTest extends DMTestSuite {
       }
     }
   }
-  test("memory") {
+  test("memory") { _ =>
     Memory(Sector.M(1)) { s =>
       assert(s.exists)
     }
   }
-  test("memory (nesting)") {
+  test("memory (nesting)") { _ =>
     Memory(Sector.M(1)) { s1 =>
       Memory(Sector.K(16)) {s2 =>
         assert(s1.exists)
@@ -70,14 +70,14 @@ class StackTest extends DMTestSuite {
 //      Memory(Sector.M(1)) { _ => }
 //    }
 //  }
-  test("<> op") {
+  test("<> op") { _ =>
     val res = 100 <> 10
     if (isDebugMode)
       assert(res === 10)
     else
       assert(res === 100)
   }
-  test("suite pool allocate") {
+  test("suite pool allocate") { _ =>
     slowDevice(Sector.M(16 <> 4)) { s1 =>
       fastDevice(Sector.M(2 <> 1)) { s2 =>
         assert(s1.exists)
@@ -85,7 +85,7 @@ class StackTest extends DMTestSuite {
       }
     }
   }
-  test("table line (writeboost)") {
+  test("table line (writeboost)") { _ =>
     Memory(Sector.M(16)) { s =>
       val t1 = Writeboost.Table(s, s)
       logger.info(t1.line)
@@ -93,7 +93,7 @@ class StackTest extends DMTestSuite {
       logger.info(t2.line)
     }
   }
-  test("status line parse (writeboost)") {
+  test("status line parse (writeboost)") { _ =>
     var args: Array[String] = (1 to 24).toArray.map(_.toString)
     args ++= Array("10",
       "writeback_threshold", "25",

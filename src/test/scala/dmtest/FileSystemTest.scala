@@ -8,7 +8,7 @@ import dmtest.stack.{Memory, Loopback}
 import org.scalatest.FunSuite
 
 class FileSystemTest extends DMTestSuite {
-  test("mkfs.xfs") {
+  test("mkfs.xfs") { _ =>
     Loopback(Sector.M(16)) { s =>
       XFS.format(s)
       XFS.Mount(s) { mp =>
@@ -17,7 +17,7 @@ class FileSystemTest extends DMTestSuite {
       }
     }
   }
-  test("mkfs.ext4") {
+  test("mkfs.ext4") { _ =>
     Loopback(Sector.M(16)) { s =>
       EXT4.format(s)
       EXT4.Mount(s) { mp =>
@@ -26,7 +26,7 @@ class FileSystemTest extends DMTestSuite {
       }
     }
   }
-  test("mkfs (inmem)") {
+  test("mkfs (inmem)") { _ =>
     Memory(Sector.M(16)) { s =>
       XFS.format(s)
       XFS.Mount(s) { mp =>
