@@ -24,7 +24,7 @@ case class Memory(size: Sector) extends Stack {
   override protected def terminate(): Unit = {
     Shell(s"losetup -d ${loopDevice}")
     Shell(s"rm ${filePath}")
-    Shell(s"umount -l ${dirPath}")
+    Shell(s"umount ${dirPath}")
     Shell(s"rm -rf ${dirPath}")
   }
 }
