@@ -9,7 +9,7 @@ import org.scalatest.FunSuite
 
 class FileSystemTest extends DMTestSuite {
   test("mkfs.xfs") {
-    Loopback(Sector.M(16)) { s =>
+    Loopback(Sector.M(32)) { s =>
       XFS.format(s)
       XFS.Mount(s) { mp =>
         val f = mp.resolve("a")
@@ -27,7 +27,7 @@ class FileSystemTest extends DMTestSuite {
     }
   }
   test("mkfs (inmem)") {
-    Memory(Sector.M(16)) { s =>
+    Memory(Sector.M(32)) { s =>
       XFS.format(s)
       XFS.Mount(s) { mp =>
         val f = mp.resolve("a")
