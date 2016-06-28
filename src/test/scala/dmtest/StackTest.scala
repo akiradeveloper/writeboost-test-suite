@@ -55,13 +55,6 @@ class StackTest extends DMTestSuite {
 //      Memory(Sector.M(1)) { _ => }
 //    }
 //  }
-  test("<> op") {
-    val res = 100 <> 10
-    if (isDebugMode)
-      assert(res === 10)
-    else
-      assert(res === 100)
-  }
   test("suite pool allocate") {
     slowDevice(Sector.M(16 <> 4)) { s1 =>
       fastDevice(Sector.M(2 <> 1)) { s2 =>
