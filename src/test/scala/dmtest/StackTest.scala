@@ -27,11 +27,16 @@ class StackTest extends DMTestSuite {
       assert(d2.exists)
       val d3 = stack.Pool.S(pool, Sector.K(5))
       assert(d3.exists)
-      d2.purge
+      d2.purge()
       val d4 = stack.Pool.S(pool, Sector.K(8))
       assert(d4.exists)
       val d5 = stack.Pool.S(pool, Sector.K(1))
       assert(d5.exists)
+
+      d1.purge()
+      d3.purge()
+      d4.purge()
+      d5.purge()
     }
   }
   test("linear") {
@@ -48,6 +53,7 @@ class StackTest extends DMTestSuite {
         Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
         assert(s2.exists)
       }
+      assert(s.exists)
     }
   }
   test("memory") {
@@ -57,11 +63,12 @@ class StackTest extends DMTestSuite {
   }
   test("memory (nesting)") {
     Memory(Sector.M(1)) { s1 =>
-      Memory(Sector.K(16)) {s2 =>
+      Memory(Sector.K(16)) { s2 =>
         assert(s1.exists)
         assert(s2.exists)
         assert(s1.bdev.path != s2.bdev.path)
       }
+      assert(s1.exists)
     }
   }
 // FIXME (fails to umount at around 500th)
