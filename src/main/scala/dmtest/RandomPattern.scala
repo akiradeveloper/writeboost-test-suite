@@ -46,7 +46,7 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
     }
     writeBlocks(delta)
   }
-  def writeBlocks(blocks: Iterable[DeltaBlock]) = {
+  private def writeBlocks(blocks: Iterable[DeltaBlock]) = {
     val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE)
     blocks.foreach { b =>
       chan.position(b.offset.toB)

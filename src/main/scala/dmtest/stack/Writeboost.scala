@@ -4,11 +4,8 @@ import dmtest._
 import scala.collection.mutable
 
 object Writeboost {
-  object Table {
-    def parse(gTable: DMState.Table): Table = ???
-  }
   type TunableKind = String
-  val TunableKinds = Seq(
+  private val TunableKinds = Seq(
     "writeback_threshold",
     "nr_max_batched_writeback",
     "update_sb_record_interval",
@@ -16,8 +13,7 @@ object Writeboost {
     "read_cache_threshold",
     "write_through_mode"
   )
-
-  def validateTunableKind(x: TunableKind): Unit = {
+  private def validateTunableKind(x: TunableKind): Unit = {
     if (!TunableKinds.contains(x)) {
       logger.error(s"tunable key ${x} isn't defined")
       assert(false)
