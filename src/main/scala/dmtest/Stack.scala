@@ -7,14 +7,13 @@ trait Stack {
 
   def bdev: BlockDevice = BlockDevice(path)
 
-  // TODO should use counting because same stack can be nested (although quite uncommon)
   // stack1 { s =>
   //   s {
   //   }
   // }
-  private var locked = false
-  def lock(): Unit = { locked = true }
-  def unlock(): Unit = { locked = false }
+  private var locked: Int = 0
+  def lock(): Unit = { locked += 1 }
+  def unlock(): Unit = { locked -= 1 }
 
   // lock is a mechanism to manage the lifetime of stacks.
   // stack1 {
@@ -31,6 +30,7 @@ trait Stack {
       purge
     }
   }
+// experimental. can't be compiled
 //  def acquire: this.type = {
 //    lock
 //    this
@@ -45,8 +45,9 @@ trait Stack {
   protected def terminate(): Unit
   protected def subStacks: Iterable[Stack] = Iterable.empty
 
+  // don't call this directly
   final def purge(): Unit = {
-    if (locked) {
+    if (locked > 0) {
       logger.debug(s"${path} is locked")
       return
     }

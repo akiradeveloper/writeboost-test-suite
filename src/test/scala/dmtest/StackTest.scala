@@ -33,6 +33,8 @@ class StackTest extends DMTestSuite {
       val d5 = stack.Pool.S(pool, Sector.K(1))
       assert(d5.exists)
 
+      // should purge the linear devices
+      // otherwise the backing loopback device can't be detached because of reference count remained.
       d1.purge()
       d3.purge()
       d4.purge()
@@ -67,6 +69,14 @@ class StackTest extends DMTestSuite {
         assert(s1.exists)
         assert(s2.exists)
         assert(s1.bdev.path != s2.bdev.path)
+      }
+      assert(s1.exists)
+    }
+  }
+  test("self nesting") {
+    Memory(Sector.K(1)) { s1 =>
+      s1 { s2 =>
+        assert(s2.exists)
       }
       assert(s1.exists)
     }
