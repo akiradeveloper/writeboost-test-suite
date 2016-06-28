@@ -6,6 +6,7 @@ import dmtest.{RandName, Shell, Stack}
 
 trait MountApply {
   def stack: Stack
+  def checkCmd: String
   def option: String
   private def mount: Path = {
     val mp = Paths.get(s"/tmp/${RandName.alloc}")
@@ -17,6 +18,7 @@ trait MountApply {
   private def umount(path: Path) = {
     Shell(s"umount -l ${path}")
     Files.deleteIfExists(path)
+    Shell(s"${checkCmd} ${stack.bdev.path}")
   }
   def apply[A](f: Path => A): A = {
     val mp = mount
