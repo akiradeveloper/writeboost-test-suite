@@ -11,7 +11,7 @@ class MiscTest extends DMTestSuite {
       assert(res === 100)
   }
   test("chdir and run cmd") {
-    val output =Shell.at(Paths.get("/tmp")) {
+    val output = Shell.at(Paths.get("/tmp")) {
       "ls"
     }
     logger.info(output)

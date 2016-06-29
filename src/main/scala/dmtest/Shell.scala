@@ -22,6 +22,6 @@ object Shell {
       case Right(o) => o
     }
   }
-  def at(cwd: Path)(cmd: => String) = apply(Process(cmd, cwd.toFile))
+  def at(cwd: Path)(cmd: String) = apply(Process(cmd, cwd.toFile))
 }
 
