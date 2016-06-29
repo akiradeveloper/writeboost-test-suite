@@ -9,7 +9,7 @@ class CompileRubyTest extends DMTestSuite {
     slowDevice(Sector.G(4)) { backing =>
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
-        EmptyStack().reload(Writeboost.Table(backing, caching)) { s =>
+        Writeboost.Table(backing, caching).create { s =>
           XFS.format(s)
           XFS.Mount(s) { mp =>
             val rc = new CompileRuby(mp)
@@ -17,8 +17,7 @@ class CompileRubyTest extends DMTestSuite {
             rc.unarchive
           }
         }
-        EmptyStack().reload(Writeboost.Table(backing, caching,
-          Map("writeback_threshold" -> 70, "read_cache_threshold" -> 31))) { s =>
+        Writeboost.Table(backing, caching, Map("writeback_threshold" -> 70, "read_cache_threshold" -> 31)).create { s =>
           s.dropCaches()
           XFS.Mount(s) { mp =>
             val rc = new CompileRuby(mp)

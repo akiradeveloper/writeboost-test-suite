@@ -11,7 +11,7 @@ class StackTest extends DMTestSuite {
   }
   test("linear") {
     stack.Loopback(Sector.K(32)) { s =>
-      EmptyStack().reload(stack.Linear.Table(s, Sector(0), Sector.K(10))) { s2 =>
+      stack.Linear.Table(s, Sector(0), Sector.K(10)).create { s2 =>
         assert(s2.exists)
       }
       assert(s.exists)

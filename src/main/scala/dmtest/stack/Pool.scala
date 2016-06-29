@@ -51,7 +51,7 @@ case class Pool(pool: Stack) {
   val freeArea = new FreeArea(pool.bdev.size)
   def alloc(size: Sector): Linear = {
     val space = freeArea.getFreeSpace(size)
-    EmptyStack().reload(Linear.Table(pool, space.start, space.len))
+    Linear.Table(pool, space.start, space.len).create
   }
   def free(linearS: Linear): Unit = {
     linearS.purge()

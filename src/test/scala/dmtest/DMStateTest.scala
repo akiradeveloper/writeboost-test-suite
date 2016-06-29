@@ -7,7 +7,7 @@ class DMStateTest extends DMTestSuite {
   test("call all methods") {
     val sz = Sector.M(16)
     Memory(sz) { s =>
-      EmptyStack().reload(Linear.Table(s, Sector(0), sz)) { ss =>
+      Linear.Table(s, Sector(0), sz).create { ss =>
         ss.dm.suspend()
         ss.dm.resume()
         val table = ss.dm.table

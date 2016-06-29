@@ -8,9 +8,7 @@ class REPRO_111 extends DMTestSuite {
   test("luks on top of writeboost") {
     slowDevice(Sector.G(12)) { slow =>
       fastDevice(Sector.M(32)) { fast =>
-        EmptyStack().reload(Writeboost.Table(
-          slow, fast
-        )) { wb =>
+        Writeboost.Table(slow, fast).create { wb =>
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
