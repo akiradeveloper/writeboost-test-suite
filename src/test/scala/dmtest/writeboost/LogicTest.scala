@@ -15,7 +15,7 @@ class LogicTest extends DMTestSuite {
         Writeboost.Table(backing, caching, Map("writeback_threshold" -> 0)).create { s =>
           s.bdev.zeroFill()
           val stat1 = Writeboost.Status.parse(s.dm.status)
-          val rp = new RandomPattern(s, Sector.K(31))
+          val rp = new RandomPatternVerifier(s, Sector.K(31))
           rp.stamp(20)
           assert(rp.verify())
           val stat2 = Writeboost.Status.parse(s.dm.status)
@@ -99,7 +99,7 @@ class LogicTest extends DMTestSuite {
       fastDevice(Sector.M(32)) { caching =>
 
         backing.bdev.zeroFill()
-        val rp = new RandomPattern(backing, Sector.K(4))
+        val rp = new RandomPatternVerifier(backing, Sector.K(4))
         rp.stamp(2)
 
         Writeboost.sweepCaches(caching)

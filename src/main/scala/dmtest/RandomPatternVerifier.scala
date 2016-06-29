@@ -5,7 +5,7 @@ import java.nio.file.{StandardOpenOption, Files}
 
 import scala.util.Random
 
-class RandomPattern(stack: Stack, blockSize: Sector) {
+class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
   case class DeltaBlock(offset: Sector) extends Ordered[DeltaBlock] {
     val data = ByteBuffers.mkRandomByteBuffer(blockSize.toB.toInt)
     def matchBytes(buf: ByteBuffer): Boolean = ByteBuffers.areTheSame(data, buf)

@@ -6,8 +6,10 @@ class SelfTest extends Suites(
   new MiscTest,
   new ConfigTest,
   new StackTest,
-  new writeboost.PureTest,
   new PoolTest,
   new DMStateTest,
   new FileSystemTest,
-  new RandomPatternTest)
+  new RandomPatternVerifierTest,
+  new PatternedSeqIOTest,
+  new writeboost.PureTest
+)

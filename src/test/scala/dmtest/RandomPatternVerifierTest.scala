@@ -2,7 +2,7 @@ package dmtest
 
 import dmtest.stack.{Loopback, Memory}
 
-class RandomPatternTest extends DMTestSuite {
+class RandomPatternVerifierTest extends DMTestSuite {
   test("make random byte buffer") {
     val a = ByteBuffers.mkRandomByteBuffer(1024)
     assert(ByteBuffers.areTheSame(a, a))
@@ -11,7 +11,7 @@ class RandomPatternTest extends DMTestSuite {
   }
   test("stamp and verify") {
     Memory(Sector.M(16)) { s =>
-      val ps = new RandomPattern(s, Sector.K(4))
+      val ps = new RandomPatternVerifier(s, Sector.K(4))
       ps.stamp(5)
       assert(ps.verify())
     }
@@ -19,7 +19,7 @@ class RandomPatternTest extends DMTestSuite {
   test("verify with") {
     val sz = Sector.M(128)
     Memory(sz) { s1 =>
-      val rp = new RandomPattern(s1, Sector.K(4))
+      val rp = new RandomPatternVerifier(s1, Sector.K(4))
       rp.stamp(5)
       assert(rp.verify())
       Loopback(sz) { s2 =>
