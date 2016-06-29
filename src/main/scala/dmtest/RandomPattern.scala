@@ -5,26 +5,10 @@ import java.nio.file.{StandardOpenOption, Files}
 
 import scala.util.Random
 
-object RandomPattern {
-  def mkRandomByteBuffer(len: Int): ByteBuffer = {
-    val d = Array.ofDim[Byte](len)
-    Random.nextBytes(d)
-
-    val data = ByteBuffer.allocate(len)
-    data.put(d)
-    data.flip()
-    data
-  }
-  // byte by byte comparison
-  def areTheSame(a: ByteBuffer, b: ByteBuffer): Boolean = {
-    a.array().zip(b.array()).forall { case (x, y) => x == y }
-  }
-}
 class RandomPattern(stack: Stack, blockSize: Sector) {
-  import RandomPattern._
   case class DeltaBlock(offset: Sector) extends Ordered[DeltaBlock] {
-    val data = mkRandomByteBuffer(blockSize.toB.toInt)
-    def matchBytes(buf: ByteBuffer): Boolean = areTheSame(data, buf)
+    val data = ByteBuffers.mkRandomByteBuffer(blockSize.toB.toInt)
+    def matchBytes(buf: ByteBuffer): Boolean = ByteBuffers.areTheSame(data, buf)
     override def compare(that: DeltaBlock): Int = (this.offset.unwrap - that.offset.unwrap).toInt
   }
   private val maxBlocks = stack.bdev.size.unwrap / blockSize.unwrap

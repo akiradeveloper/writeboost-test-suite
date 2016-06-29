@@ -4,10 +4,10 @@ import dmtest.stack.{Loopback, Memory}
 
 class RandomPatternTest extends DMTestSuite {
   test("make random byte buffer") {
-    val a = RandomPattern.mkRandomByteBuffer(1024)
-    assert(RandomPattern.areTheSame(a, a))
-    val b = RandomPattern.mkRandomByteBuffer(1024)
-    assert(!RandomPattern.areTheSame(a, b))
+    val a = ByteBuffers.mkRandomByteBuffer(1024)
+    assert(ByteBuffers.areTheSame(a, a))
+    val b = ByteBuffers.mkRandomByteBuffer(1024)
+    assert(!ByteBuffers.areTheSame(a, b))
   }
   test("stamp and verify") {
     Memory(Sector.M(16)) { s =>
