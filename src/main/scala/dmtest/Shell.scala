@@ -6,7 +6,7 @@ import java.nio.file.Path
 import scala.sys.process._
 
 object Shell {
-  private def sync(cmd: ProcessBuilder): Either[Int, String] = {
+  def sync(cmd: ProcessBuilder): Either[Int, String] = {
     logger.debug(s"sh> ${cmd}")
     val os = new ByteArrayOutputStream()
     val err = (cmd #> os).!

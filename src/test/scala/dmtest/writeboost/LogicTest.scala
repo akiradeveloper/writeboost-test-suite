@@ -4,6 +4,9 @@ import dmtest._
 import dmtest.stack._
 import dmtest.DMTestSuite
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+
 class LogicTest extends DMTestSuite {
   test("rambuf read fullsize") {
     slowDevice(Sector.M(16)) { backing =>
@@ -14,7 +17,7 @@ class LogicTest extends DMTestSuite {
           val stat1 = Writeboost.Status.parse(s.dm.status)
           val rp = new RandomPattern(s, Sector.K(31))
           rp.stamp(20)
-          assert(rp.verify)
+          assert(rp.verify())
           val stat2 = Writeboost.Status.parse(s.dm.status)
           val key = Writeboost.StatKey(false, true, true, true)
           assert(stat2.stat(key) > stat2.stat(key))
@@ -66,6 +69,51 @@ class LogicTest extends DMTestSuite {
         }
         val key = Writeboost.StatKey(false, true, false, true)
         assert(st1.stat(key) === st2.stat(key))
+      }
+    }
+  }
+  test("read cache threshold") {
+    slowDevice(Sector.G(2)) { backing =>
+      fastDevice(Sector.M(128)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127)).create { s =>
+          import scala.concurrent.ExecutionContext.Implicits.global
+
+          val f1 = Future(Shell.sync(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000"))
+          val f2 = Future(Shell.sync(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M skip=500 count=1000"))
+          val fx = Future.sequence(Seq(f1, f2))
+          val result = Await.result(fx, Duration.Inf)
+          assert(result.forall(_.isRight))
+
+          val st1 = Writeboost.Status.parse(s.dm.status())
+          Shell(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000")
+          val st2 = Writeboost.Status.parse(s.dm.status())
+          val key = Writeboost.StatKey(false, true, false, true)
+          assert(st2.stat(key) === st1.stat(key))
+        }
+      }
+    }
+  }
+  test("read cache verify data") {
+    slowDevice(Sector.M(1024)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+
+        backing.bdev.zeroFill()
+        val rp = new RandomPattern(backing, Sector.K(4))
+        rp.stamp(2)
+
+        Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127))
+        table.create { s =>
+          assert(rp.verify(withStack = s)) // stage all data
+        }
+        table.create { s =>
+          val st1 = Writeboost.Status.parse(s.dm.status())
+          assert(rp.verify(withStack = s))
+          val st2 = Writeboost.Status.parse(s.dm.status())
+          val key = Writeboost.StatKey(false, true, false, true)
+          assert(st2.stat(key) > st1.stat(key))
+        }
       }
     }
   }

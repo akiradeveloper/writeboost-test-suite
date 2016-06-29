@@ -55,8 +55,8 @@ class RandomPattern(stack: Stack, blockSize: Sector) {
     }
     chan.close
   }
-  def verify(): Boolean = {
-    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.READ)
+  def verify(withStack: Stack = stack): Boolean = {
+    val chan = Files.newByteChannel(withStack.bdev.path, StandardOpenOption.READ)
     var success = true
     delta.foreach { b =>
       val buf = ByteBuffer.allocate(blockSize.toB.toInt)
