@@ -9,7 +9,10 @@ class DMState(val name: String) {
   import DMState._
   def create() = Shell(s"dmsetup create ${name} --notable")
   def remove() = Shell(s"dmsetup remove ${name}")
-  def reload(table: String) = Shell(s"dmsetup reload ${name} ${TempFile(table)}")
+  def reload(table: String) = {
+    logger.debug(s"reload: table=${table}")
+    Shell(s"dmsetup reload ${name} ${TempFile(table)}")
+  }
   def suspend() = Shell(s"dmsetup suspend ${name}")
   def resume() = Shell(s"dmsetup resume ${name}")
   def table: Table = {
