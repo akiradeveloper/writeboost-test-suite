@@ -64,8 +64,8 @@ class LogicTest extends DMTestSuite {
   test("read cache") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
-        val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 1))
         Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 1))
         // def run(s: Stack) = Shell(s"fio --name=test --filename=${s.bdev.path} --io_limit=16M --rw=read:4K --bs=4K --direct=1")
         import PatternedSeqIO._
         val pat = Seq(Read(Sector.K(4)), Skip(Sector.K(4)))

@@ -10,6 +10,7 @@ class StackTest extends DMTestSuite {
   test("just stack") {
     slowDevice(Sector.M(16)) { backing =>
       fastDevice(Sector.M(4)) { caching =>
+        Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
           assert(s.exists)
         }
