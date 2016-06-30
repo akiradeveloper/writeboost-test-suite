@@ -39,7 +39,7 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     }
     chan.close
   }
-  def verify(withStack: Stack = stack): Boolean = {
+  def verify(withStack: Stack = this.stack): Boolean = {
     val chan = Files.newByteChannel(withStack.bdev.path, StandardOpenOption.READ)
     var success = true
     delta.foreach { b =>

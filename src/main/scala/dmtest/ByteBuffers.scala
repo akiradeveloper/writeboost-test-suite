@@ -5,6 +5,14 @@ import java.nio.ByteBuffer
 import scala.util.Random
 
 object ByteBuffers {
+  def mkZeroedByteBuffer(len: Int): ByteBuffer = {
+    val d = Array.fill[Byte](len){0}
+
+    val data = ByteBuffer.allocate(len)
+    data.put(d)
+    data.flip()
+    data
+  }
   def mkRandomByteBuffer(len: Int): ByteBuffer = {
     val d = Array.ofDim[Byte](len)
     Random.nextBytes(d)
@@ -16,15 +24,14 @@ object ByteBuffers {
   }
   // byte by byte comparison
   def areTheSame(a: ByteBuffer, b: ByteBuffer): Boolean = {
-    a.array().zip(b.array()).forall { case (x, y) => x == y }
+    val len: Int = a.limit() - a.position()
+    for (i <- 0 until len) {
+      if (a.get(i) != b.get(i)) return false
+    }
+    return true
   }
   def isZeroed(a: ByteBuffer): Boolean = {
     val len: Int = a.limit() - a.position()
-    for (i <- 0 until len) {
-      val b = a.get(i)
-      if (b != 0) return false
-    }
-    a.rewind()
-    true
+    areTheSame(a, mkZeroedByteBuffer(len))
   }
 }
