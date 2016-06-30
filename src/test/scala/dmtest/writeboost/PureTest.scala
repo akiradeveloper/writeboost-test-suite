@@ -8,8 +8,10 @@ class PureTest extends DMTestSuite {
     Memory(Sector.M(16)) { s =>
       val t1 = Writeboost.Table(s, s)
       logger.info(t1.line)
-      val t2 = Writeboost.Table(s, s, Map("writeback_threshold" -> 50, "nr_max_batched_writeback" -> 128))
+      val t2 = Writeboost.Table(s, s)
       logger.info(t2.line)
+      val t3 = Writeboost.Table(s, s, Map("writeback_threshold" -> 50, "nr_max_batched_writeback" -> 128))
+      logger.info(t3.line)
     }
   }
   test("status line parse (writeboost)") {
