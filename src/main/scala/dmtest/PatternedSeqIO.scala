@@ -21,11 +21,12 @@ class PatternedSeqIO(pat: Seq[PatternedSeqIO.Pattern]) {
   val patLen: Sector = pat.map(_.len).foldLeft(Sector(0))(_ + _)
 
   def run(s: Stack): Unit = {
+    val devSize = s.bdev.size
     var cursor = startingOffset
     def writtenAmount = cursor - startingOffset
     val deadline = System.currentTimeMillis() + maxRuntime
     def shouldQuit: Boolean = {
-      if (deadline > 0L && System.currentTimeMillis() > deadline) {
+      if (maxRuntime > 0L && System.currentTimeMillis() > deadline) {
         logger.warn("runtime exceeded")
         return true
       }
@@ -33,14 +34,14 @@ class PatternedSeqIO(pat: Seq[PatternedSeqIO.Pattern]) {
         logger.warn("max IO amount exceeded")
         return true
       }
-      if (writtenAmount + patLen > s.bdev.size)
+      if (writtenAmount + patLen > devSize)
         return true
 
       return false
     }
-    val chan = Files.newByteChannel(s.bdev.path, StandardOpenOption.WRITE)
+    val chan = Files.newByteChannel(s.bdev.path, StandardOpenOption.READ, StandardOpenOption.WRITE)
     while (!shouldQuit) {
-      pat.foreach { a: Pattern => a match {
+      pat.foreach { _ match {
         case Write(len) =>
           val buf = ByteBuffers.mkRandomByteBuffer(len.toB.toInt)
 

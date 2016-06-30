@@ -16,4 +16,7 @@ class MiscTest extends DMTestSuite {
     }
     logger.info(output)
   }
+  test("rand buffer is not zeroed") {
+    assert(!ByteBuffers.isZeroed(ByteBuffers.mkRandomByteBuffer(1000)))
+  }
 }

@@ -24,6 +24,7 @@ object ByteBuffers {
       val b = a.get(i)
       if (b != 0) return false
     }
+    a.rewind()
     true
   }
 }
