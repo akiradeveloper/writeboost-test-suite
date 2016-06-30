@@ -3,9 +3,9 @@ package dmtest
 import java.nio.file.{Path, Paths}
 
 import dmtest.stack.{Memory, Direct, Loopback, Pool}
-import org.scalatest.{FunSuite, Outcome, fixture, BeforeAndAfterAll}
+import org.scalatest._
 
-trait DMTestSuite extends FunSuite with BeforeAndAfterAll {
+trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAll {
   def isDebugMode: Boolean = Config.rootConfig.isEmpty
   implicit class Compare[A](a: A) {
     def `<>`(b: A): A = if (isDebugMode) b else a
@@ -42,5 +42,28 @@ trait DMTestSuite extends FunSuite with BeforeAndAfterAll {
     }
   }
   override def afterAll = {
+  }
+
+  private var _numMount: Int = 0
+  private var _numTable: Int = 0
+
+  def numMount: Int = {
+    Shell("mount").split("\n").size
+  }
+
+  def numTable: Int = {
+    Shell("dmsetup table").split("\n").size
+  }
+
+  override def beforeEach = {
+    _numMount = numMount
+    _numTable = numTable
+  }
+
+  override def afterEach = {
+    if (numMount != _numMount)
+      logger.error("mount inconsistent before and after test")
+    if (numTable != _numTable)
+      logger.error("dmsetup table inconsistent before and after test")
   }
 }
