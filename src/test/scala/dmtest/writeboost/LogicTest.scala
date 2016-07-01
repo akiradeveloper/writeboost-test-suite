@@ -119,6 +119,7 @@ class LogicTest extends DMTestSuite {
         val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127))
         table.create { s =>
           assert(rp.verify(withStack = s)) // stage all data
+          Writeboost.Status.parse(s.dm.status()) // not used but for debugging
           s.dropTransient()
         }
         table.create { s =>

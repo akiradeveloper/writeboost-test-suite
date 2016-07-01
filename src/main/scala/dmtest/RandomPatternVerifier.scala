@@ -12,16 +12,16 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     override def compare(that: DeltaBlock): Int = (this.offset.unwrap - that.offset.unwrap).toInt
   }
   private val maxBlocks = stack.bdev.size.unwrap / blockSize.unwrap
-  private val delta = scala.collection.mutable.SortedSet[DeltaBlock]()
+  private val delta = scala.collection.mutable.ArrayBuffer[DeltaBlock]()
   def stamp(percent: Int) = {
     val nblocks = maxBlocks * percent / 100 // TODO care the end?
+    assert(nblocks < maxBlocks)
     def mkBlock: DeltaBlock = {
-      val offset: Sector = blockSize * Random.nextInt(nblocks.toInt)
+      val offset: Sector = blockSize * Random.nextInt(maxBlocks.toInt)
       DeltaBlock(offset)
     }
 
     logger.debug(s"stamp #${nblocks} delta blocks")
-
     var count = nblocks
     while (count > 0) {
       val b = mkBlock
@@ -30,6 +30,7 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
         count -= 1
       }
     }
+
     writeBlocks(delta)
   }
   private def writeBlocks(blocks: Iterable[DeltaBlock]) = {
