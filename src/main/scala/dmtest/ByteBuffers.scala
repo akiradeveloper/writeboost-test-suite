@@ -24,7 +24,8 @@ object ByteBuffers {
   }
   // byte by byte comparison
   def areTheSame(a: ByteBuffer, b: ByteBuffer): Boolean = {
-    val len: Int = a.limit() - a.position()
+    assert(a.remaining() == b.remaining())
+    val len: Int = a.remaining()
     for (i <- 0 until len) {
       if (a.get(i) != b.get(i)) return false
     }

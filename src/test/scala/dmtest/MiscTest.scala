@@ -1,6 +1,8 @@
 package dmtest
 
 import java.nio.file.Paths
+import dmtest._
+import dmtest.stack._
 
 class MiscTest extends DMTestSuite {
   test("<> op") {
@@ -16,9 +18,21 @@ class MiscTest extends DMTestSuite {
     }
     logger.info(output)
   }
+  test("block device write then read") {
+    Memory(Sector.M(10)) { s =>
+      val sz = Sector(7)
+      val offset = Sector(102)
+      val data = ByteBuffers.mkRandomByteBuffer(sz.toB.toInt)
+      s.bdev.write(offset, data)
+      data.rewind()
+      val read = s.bdev.read(offset, sz)
+      assert(ByteBuffers.areTheSame(read, data))
+    }
+  }
   test("make random byte buffer") {
     val a = ByteBuffers.mkRandomByteBuffer(1024)
     assert(ByteBuffers.areTheSame(a, a))
+    a.rewind()
     val b = ByteBuffers.mkRandomByteBuffer(1024)
     assert(!ByteBuffers.areTheSame(a, b))
   }
