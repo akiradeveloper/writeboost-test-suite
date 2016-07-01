@@ -20,14 +20,14 @@ trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAl
     if (isDebugMode) {
       Memory(size)
     } else {
-      slowPool.alloc(size)
+      Pool.S(slowPool, size)
     }
   }
   def fastDevice(size: Sector): Stack = {
     if (isDebugMode) {
       Memory(size)
     } else {
-      fastPool.alloc(size)
+      Pool.S(fastPool, size)
     }
   }
 
