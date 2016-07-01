@@ -14,13 +14,13 @@ class LogicTest extends DMTestSuite {
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching, Map("writeback_threshold" -> 0)).create { s =>
           s.bdev.zeroFill()
-          val stat1 = Writeboost.Status.parse(s.dm.status)
+          val st1 = Writeboost.Status.parse(s.dm.status)
           val rp = new RandomPatternVerifier(s, Sector.K(31))
           rp.stamp(20)
           assert(rp.verify())
-          val stat2 = Writeboost.Status.parse(s.dm.status)
+          val st2 = Writeboost.Status.parse(s.dm.status)
           val key = Writeboost.StatKey(false, true, true, true)
-          assert(stat2.stat(key) > stat2.stat(key))
+          assert(st2.stat(key) > st1.stat(key))
         }
       }
     }
@@ -82,7 +82,7 @@ class LogicTest extends DMTestSuite {
           Writeboost.Status.parse(s.dm.status())
         }
         val key = Writeboost.StatKey(false, true, false, true)
-        assert(st1.stat(key) === st2.stat(key))
+        assert(st2.stat(key) === st1.stat(key))
       }
     }
   }
@@ -111,7 +111,6 @@ class LogicTest extends DMTestSuite {
   test("read cache verify data") {
     slowDevice(Sector.M(1024)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
-
         backing.bdev.zeroFill()
         val rp = new RandomPatternVerifier(backing, Sector.K(4))
         rp.stamp(2)
@@ -120,12 +119,13 @@ class LogicTest extends DMTestSuite {
         val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127))
         table.create { s =>
           assert(rp.verify(withStack = s)) // stage all data
+          s.dropTransient()
         }
         table.create { s =>
           val st1 = Writeboost.Status.parse(s.dm.status())
-          assert(rp.verify(withStack = s))
+          assert(rp.verify(withStack = s)) // should read hit
           val st2 = Writeboost.Status.parse(s.dm.status())
-          val key = Writeboost.StatKey(false, true, false, true)
+          val key = Writeboost.StatKey(false, true, false, true) // fullsize read hit
           assert(st2.stat(key) > st1.stat(key))
         }
       }

@@ -36,7 +36,7 @@ object Writeboost {
     def parse(status: DMState.Status): Status = {
       val q = mutable.Queue[String]()
       q ++= status.args
-      Status(
+      val stat = Status(
         q.dequeue.toInt,
         q.dequeue.toInt,
         q.dequeue.toInt,
@@ -65,6 +65,8 @@ object Writeboost {
           result.toMap
         }
       )
+      logger.debug(s"stat (parsed): ${stat}")
+      stat
     }
   }
   case class StatKey(write: Boolean, hit: Boolean, onBuffer: Boolean, fullSize: Boolean)
@@ -89,6 +91,14 @@ object Writeboost {
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
   override def subStacks = Seq(table.backingDev, table.cacheDev)
+  // drop all transient data in the ram buffer to the caching device
+  // suspend + resume is used dm-wide to resolve all remaining transient data.
+  def dropTransient(): Unit = {
+    dm.suspend()
+    dm.resume()
+  }
+  // drop all dirty blocks from the caching device to the backing device
+  // (ram buffer isn't concerned)
   def dropCaches(): Unit = dm.message("drop_caches")
   def clearStats(): Unit = dm.message("clear_stats")
 }
