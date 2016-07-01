@@ -9,7 +9,12 @@ class REPRO_111 extends DMTestSuite {
     slowDevice(Sector.G(12)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)
-        Writeboost.Table(backing, caching).create { wb =>
+        val options = Map(
+          "writeback_threshold" -> 70,
+          "sync_data_interval" -> 3600,
+          "read_cache_threshold" -> 2
+        )
+        Writeboost.Table(backing, caching, options).create { wb =>
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
