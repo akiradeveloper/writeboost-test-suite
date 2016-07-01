@@ -1,5 +1,7 @@
 package dmtest
 
+import dmtest.stack._
+
 class PoolTest extends DMTestSuite {
   test("pool (algorithm)") {
     val fa = new stack.Pool.FreeArea(Sector(8))
@@ -31,6 +33,17 @@ class PoolTest extends DMTestSuite {
       d3.purge()
       d4.purge()
       d5.purge()
+    }
+  }
+  test("pool and linear")  {
+    val sz = Sector.K(32)
+    Loopback(sz) { loopback =>
+      val pool = new Pool(loopback)
+      Pool.S(pool, sz) { pooled =>
+        Linear.Table(pooled, Sector(0), sz).create { s =>
+          assert(s.exists)
+        }
+      }
     }
   }
 }
