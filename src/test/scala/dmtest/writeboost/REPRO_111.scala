@@ -18,7 +18,7 @@ class REPRO_111 extends DMTestSuite {
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
-              Shell(s"dd if=/dev/zero of=${mp.resolve("a")} oflag=direct bs=512 count=10")
+              Shell.at(mp)(s"stress -v --timeout 30 --hdd 4 --hdd-bytes 512M")
             }
           }
         }
