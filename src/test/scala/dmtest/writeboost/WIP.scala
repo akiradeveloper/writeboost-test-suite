@@ -19,7 +19,7 @@ class WIP extends DMTestSuite {
           // bb 11 bb bb bb bb bb bb
           val shouldRead: DataBuffer = base.overwrite(Sector(1).toB.toInt, D1)
           val st1 = s.status
-          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          assert(s.bdev.read(Sector(0), Sector(8)) isSameAs shouldRead)
           val st2 = s.status
           val key = Writeboost.StatKey(false, true, true, false)
           assert(st2.stat(key) > st1.stat(key))
@@ -43,7 +43,7 @@ class WIP extends DMTestSuite {
           // bb 11 bb bb bb bb bb bb
           val shouldRead: DataBuffer = base.overwrite(Sector(1).toB.toInt, D1)
           val st1 = s.status
-          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          assert(s.bdev.read(Sector(0), Sector(8)) isSameAs shouldRead)
           val st2 = s.status
           val key = Writeboost.StatKey(false, true, false, false)
           assert(st2.stat(key) > st1.stat(key))
@@ -72,7 +72,7 @@ class WIP extends DMTestSuite {
             .overwrite(Sector(1).toB.toInt, D1)
             .overwrite(Sector(0).toB.toInt, D2)
           val st1 = s.status
-          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          assert(s.bdev.read(Sector(0), Sector(8)) isSameAs shouldRead)
           val st2 = s.status
           val key = Writeboost.StatKey(false, true, true, false)
           assert(st2.stat(key) > st1.stat(key))
@@ -101,7 +101,7 @@ class WIP extends DMTestSuite {
             .overwrite(Sector(1).toB.toInt, D1)
             .overwrite(Sector(2).toB.toInt, D2)
           val st1 = s.status
-          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          assert(s.bdev.read(Sector(0), Sector(8)) isSameAs shouldRead)
           val st2 = s.status
           val key = Writeboost.StatKey(false, true, true, false)
           assert(st2.stat(key) > st1.stat(key))
