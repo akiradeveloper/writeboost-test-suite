@@ -25,8 +25,8 @@ object Writeboost {
     override def line: String = {
       val nrTunables = tunables.size * 2
       val asList = tunables map { case (k, v) => validateTunableKind(k); s"${k} ${v}" } mkString " "
-      val optionalArgs = if (nrTunables > 0) {
-        " ${nrTunables} ${asList}"
+      val optionalArgs: String = if (nrTunables > 0) {
+        s" ${nrTunables} ${asList}"
       } else {
         ""
       }
