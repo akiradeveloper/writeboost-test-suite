@@ -1,6 +1,5 @@
 package dmtest
 
-import java.nio.ByteBuffer
 import java.nio.file.Files
 
 import dmtest.fs.{EXT4, XFS}

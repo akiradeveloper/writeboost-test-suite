@@ -1,14 +1,13 @@
 package dmtest
 
-import java.nio.ByteBuffer
 import java.nio.file.{StandardOpenOption, Files}
 
 import scala.util.Random
 
 class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
   case class DeltaBlock(offset: Sector) extends Ordered[DeltaBlock] {
-    val data = ByteBuffers.mkRandomByteBuffer(blockSize.toB.toInt)
-    def matchBytes(buf: ByteBuffer): Boolean = ByteBuffers.areTheSame(data, buf)
+    val data = DataBuffer.random(blockSize.toB.toInt)
+    def matchBytes(buf: DataBuffer): Boolean = data.isSameAs(buf)
     override def compare(that: DeltaBlock): Int = (this.offset.unwrap - that.offset.unwrap).toInt
   }
   private val maxBlocks = stack.bdev.size.unwrap / blockSize.unwrap
@@ -37,8 +36,7 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE)
     blocks.foreach { b =>
       chan.position(b.offset.toB)
-      chan.write(b.data)
-      b.data.rewind()
+      chan.write(b.data.refByteBuffer)
     }
     chan.close
   }
@@ -49,10 +47,9 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     logger.debug(s"verify #${delta.size} delta blocks")
 
     delta.foreach { b =>
-      val buf = ByteBuffer.allocate(blockSize.toB.toInt)
+      val buf = DataBuffer.allocate(blockSize.toB.toInt)
       chan.position(b.offset.toB)
-      chan.read(buf)
-      buf.flip()
+      chan.read(buf.refByteBuffer)
       if (!b.matchBytes(buf)) {
         logger.error(s"offset ${b.offset} didn't match")
         success = false

@@ -1,6 +1,5 @@
 package dmtest
 
-import java.nio.ByteBuffer
 import java.nio.file.{StandardOpenOption, Files}
 
 import scala.util.Random
@@ -43,16 +42,16 @@ class PatternedSeqIO(pat: Seq[PatternedSeqIO.Pattern]) {
     while (!shouldQuit) {
       pat.foreach { _ match {
         case Write(len) =>
-          val buf = ByteBuffers.mkRandomByteBuffer(len.toB.toInt)
+          val buf = DataBuffer.random(len.toB.toInt)
 
           chan.position(cursor.toB)
-          chan.write(buf)
+          chan.write(buf.refByteBuffer)
           cursor += len
         case Read(len) =>
-          val buf = ByteBuffer.allocate(len.toB.toInt)
+          val buf = DataBuffer.allocate(len.toB.toInt)
 
           chan.position(cursor.toB)
-          chan.read(buf)
+          chan.read(buf.refByteBuffer)
           cursor += len
         case Skip(len) =>
           cursor += len

@@ -1,7 +1,5 @@
 package dmtest
 
-import java.nio.ByteBuffer
-
 import dmtest._
 import dmtest.stack._
 
@@ -22,9 +20,9 @@ class PatternedSeqIOTest extends DMTestSuite {
       s.bdev.zeroFill()
       pio.run(s)
 
-      assert(!ByteBuffers.isZeroed(s.bdev.read(Sector.K(4), Sector.K(1))))
-      assert(ByteBuffers.isZeroed(s.bdev.read(Sector.K(5), Sector.K(9))))
-      assert(!ByteBuffers.isZeroed(s.bdev.read(Sector.K(14), Sector.K(1))))
+      assert(!s.bdev.read(Sector.K(4), Sector.K(1)).isZeroed)
+      assert(s.bdev.read(Sector.K(5), Sector.K(9)).isZeroed)
+      assert(!s.bdev.read(Sector.K(14), Sector.K(1)).isZeroed)
     }
   }
 }

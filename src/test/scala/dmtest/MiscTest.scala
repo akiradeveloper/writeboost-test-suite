@@ -22,26 +22,10 @@ class MiscTest extends DMTestSuite {
     Memory(Sector.M(10)) { s =>
       val sz = Sector(7)
       val offset = Sector(102)
-      val data = ByteBuffers.mkRandomByteBuffer(sz.toB.toInt)
+      val data = DataBuffer.random(sz.toB.toInt)
       s.bdev.write(offset, data)
-      data.rewind()
       val read = s.bdev.read(offset, sz)
-      assert(ByteBuffers.areTheSame(read, data))
+      assert(read.isSameAs(data))
     }
-  }
-  test("make random byte buffer") {
-    val a = ByteBuffers.mkRandomByteBuffer(1024)
-    assert(ByteBuffers.areTheSame(a, a))
-    a.rewind()
-    val b = ByteBuffers.mkRandomByteBuffer(1024)
-    assert(!ByteBuffers.areTheSame(a, b))
-  }
-  test("two rand buffers are not equal") {
-    val a = ByteBuffers.mkRandomByteBuffer(1000)
-    val b = ByteBuffers.mkRandomByteBuffer(1000)
-    assert(!ByteBuffers.areTheSame(a, b))
-  }
-  test("rand buffer is not zeroed") {
-    assert(!ByteBuffers.isZeroed(ByteBuffers.mkRandomByteBuffer(1000)))
   }
 }

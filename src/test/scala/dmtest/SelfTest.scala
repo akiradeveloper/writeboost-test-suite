@@ -4,6 +4,7 @@ import org.scalatest.Suites
 
 class SelfTest extends Suites(
   new MiscTest,
+  new DataBufferTest,
   new ConfigTest,
   new StackTest,
   new PoolTest,

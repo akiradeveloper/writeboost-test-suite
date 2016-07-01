@@ -6,23 +6,26 @@ import java.nio.file.{StandardOpenOption, Files, Path}
 case class BlockDevice(path: Path) {
   def size: Sector = Sector(Shell(s"blockdev --getsize ${path}").toLong)
   def zeroFill(): Unit = Shell(s"dd if=/dev/zero of=${path} bs=512 count=${size}")
-  def read(offset: Sector, len: Sector): ByteBuffer = {
-    val buf = ByteBuffer.allocate(len.toB.toInt)
+  def read(offset: Sector, len: Sector): DataBuffer = {
+    val buf = Array.ofDim[Byte](len.toB.toInt)
 
     val chan = Files.newByteChannel(path, StandardOpenOption.READ)
-    chan.position(offset.toB)
-    chan.read(buf)
-    buf.flip()
-    chan.close()
+    try {
+      chan.position(offset.toB)
+      chan.read(ByteBuffer.wrap(buf))
+    } finally {
+      chan.close()
+    }
 
-    buf
+    DataBuffer(buf)
   }
-  def write(offset: Sector, buf: ByteBuffer): Unit = {
-    val expected = buf.remaining()
-    assert(expected > 0)
+  def write(offset: Sector, buf: DataBuffer): Unit = {
     val chan = Files.newByteChannel(path, StandardOpenOption.WRITE)
-    chan.position(offset.toB)
-    assert(chan.write(buf) == expected)
-    chan.close()
+    try {
+      chan.position(offset.toB)
+      assert(chan.write(buf.refByteBuffer) == buf.size)
+    } finally {
+      chan.close()
+    }
   }
 }
