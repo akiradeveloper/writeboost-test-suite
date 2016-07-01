@@ -39,7 +39,7 @@ class PatternedSeqIO(pat: Seq[PatternedSeqIO.Pattern]) {
 
       return false
     }
-    val chan = Files.newByteChannel(s.bdev.path, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.SYNC)
+    val chan = Files.newByteChannel(s.bdev.path, StandardOpenOption.READ, StandardOpenOption.WRITE)
     while (!shouldQuit) {
       pat.foreach { _ match {
         case Write(len) =>

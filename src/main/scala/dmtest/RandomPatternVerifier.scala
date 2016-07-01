@@ -31,7 +31,7 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     writeBlocks(delta)
   }
   private def writeBlocks(blocks: Iterable[DeltaBlock]) = {
-    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE, StandardOpenOption.SYNC)
+    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE)
     blocks.foreach { b =>
       chan.position(b.offset.toB)
       chan.write(b.data)

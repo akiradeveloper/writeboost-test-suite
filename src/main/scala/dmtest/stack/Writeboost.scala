@@ -4,27 +4,26 @@ import dmtest._
 import scala.collection.mutable
 
 object Writeboost {
-  type TunableKind = String
-  private val TunableKinds = Seq(
-    "writeback_threshold",
-    "nr_max_batched_writeback",
-    "update_sb_record_interval",
-    "sync_data_interval",
-    "read_cache_threshold",
-    "write_through_mode"
-  )
-  private def validateTunableKind(x: TunableKind): Unit = {
-    if (!TunableKinds.contains(x)) {
-      logger.error(s"tunable key ${x} isn't defined")
-      assert(false)
-    }
-  }
   def sweepCaches(cacheDev: Stack) = Shell(s"dd if=/dev/zero of=${cacheDev.bdev.path} oflag=direct bs=512 count=1")
-  case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[TunableKind, Int] = Map.empty) extends DMTable[Writeboost] {
+  case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[String, Int] = Map.empty) extends DMTable[Writeboost] {
+    private def validateOptionals(x: String): Unit = {
+      val allowed = Seq(
+        "writeback_threshold",
+        "nr_max_batched_writeback",
+        "update_sb_record_interval",
+        "sync_data_interval",
+        "read_cache_threshold",
+        "write_through_mode"
+      )
+      if (!allowed.contains(x)) {
+        logger.error(s"tunable key ${x} isn't defined")
+        assert(false)
+      }
+    }
     override def f: (DMStack) => Writeboost = (a: DMStack) => Writeboost(a, this)
     override def line: String = {
       val nrTunables = tunables.size * 2
-      val asList = tunables map { case (k, v) => validateTunableKind(k); s"${k} ${v}" } mkString " "
+      val asList = tunables map { case (k, v) => validateOptionals(k); s"${k} ${v}" } mkString " "
       val optionalArgs: String = if (nrTunables > 0) {
         s" ${nrTunables} ${asList}"
       } else {
@@ -60,7 +59,6 @@ object Writeboost {
           q.dequeue // discard nr_tunables
           while (!q.isEmpty) {
             val k = q.dequeue()
-            validateTunableKind(k)
             val v = q.dequeue().toInt
             result += k -> v
           }
@@ -86,7 +84,7 @@ object Writeboost {
     nrDirtyCacheBlocks: Int,
     stat: Map[StatKey, Int],
     nrPartialFlushed: Int,
-    tunables: Map[TunableKind, Int]
+    tunables: Map[String, Int]
   )
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
