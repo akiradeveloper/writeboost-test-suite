@@ -101,4 +101,5 @@ case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStac
   // (ram buffer isn't concerned)
   def dropCaches(): Unit = dm.message("drop_caches")
   def clearStats(): Unit = dm.message("clear_stats")
+  def status: Writeboost.Status = Writeboost.Status.parse(dm.status())
 }

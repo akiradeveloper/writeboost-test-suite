@@ -5,7 +5,7 @@ import dmtest.stack._
 import dmtest.fs._
 
 class WIP extends DMTestSuite {
-  test("read: compose partial rambuf data + backing (overlap)") {
+  test("read: compose: rambuf data + backing") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)
@@ -13,22 +13,102 @@ class WIP extends DMTestSuite {
           val base = DataBuffer.random(Sector(8).toB.toInt)
           backing.bdev.write(Sector(0), base)
 
-          val partial = DataBuffer.random(Sector(1).toB.toInt)
-          s.bdev.write(Sector(1), partial) // rambuf
+          val D1 = DataBuffer.random(Sector(1).toB.toInt)
+          s.bdev.write(Sector(1), D1)
 
-          // b = backing
-          // x = rambuf
-          // bb xx bb bb bb bb bb bb
-          val shouldRead = base.overwrite(Sector(1).toB.toInt, partial)
+          // bb 11 bb bb bb bb bb bb
+          val shouldRead: DataBuffer = base.overwrite(Sector(1).toB.toInt, D1)
+          val st1 = s.status
           assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          val st2 = s.status
+          val key = Writeboost.StatKey(false, true, true, false)
+          assert(st2.stat(key) > st1.stat(key))
         }
       }
     }
   }
-  test("read: compose partial cachee data + backing") {
+  test("read: compose: cached data + backing") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          val base = DataBuffer.random(Sector(8).toB.toInt)
+          backing.bdev.write(Sector(0), base)
+
+          val D1 = DataBuffer.random(Sector(1).toB.toInt)
+          s.bdev.write(Sector(1), D1) // rambuf
+
+          s.dropTransient()
+
+          // bb 11 bb bb bb bb bb bb
+          val shouldRead: DataBuffer = base.overwrite(Sector(1).toB.toInt, D1)
+          val st1 = s.status
+          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          val st2 = s.status
+          val key = Writeboost.StatKey(false, true, false, false)
+          assert(st2.stat(key) > st1.stat(key))
+        }
+      }
+    }
   }
-  test("write: compose partial cached data + write data (really compose)") {
+  test("read: compose: rambuf overwrite cached data + backing"){
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          val base = DataBuffer.random(Sector(8).toB.toInt)
+          backing.bdev.write(Sector(0), base)
+
+          val D1 = DataBuffer.random(Sector(1).toB.toInt)
+          s.bdev.write(offset = Sector(1), D1)
+
+          s.dropTransient()
+
+          val D2 = DataBuffer.random(Sector(2).toB.toInt)
+          s.bdev.write(offset = Sector(0), D2)
+
+          // 22 22 bb bb bb bb bb bb
+          val shouldRead: DataBuffer = base
+            .overwrite(Sector(1).toB.toInt, D1)
+            .overwrite(Sector(0).toB.toInt, D2)
+          val st1 = s.status
+          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          val st2 = s.status
+          val key = Writeboost.StatKey(false, true, true, false)
+          assert(st2.stat(key) > st1.stat(key))
+        }
+      }
+    }
   }
-  test("write: compose partial cached data + write data (newer data wins all)") {
+  test("read: compose: rambuf not overwrite cached data + backing"){
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          val base = DataBuffer.random(Sector(8).toB.toInt)
+          backing.bdev.write(Sector(0), base)
+
+          val D1 = DataBuffer.random(Sector(1).toB.toInt)
+          s.bdev.write(offset = Sector(1), D1)
+
+          s.dropTransient()
+
+          val D2 = DataBuffer.random(Sector(2).toB.toInt)
+          s.bdev.write(offset = Sector(2), D2)
+
+          // bb 11 22 22 bb bb bb bb
+          val shouldRead: DataBuffer = base
+            .overwrite(Sector(1).toB.toInt, D1)
+            .overwrite(Sector(2).toB.toInt, D2)
+          val st1 = s.status
+          assert(s.bdev.read(Sector(0), Sector(8)) === shouldRead)
+          val st2 = s.status
+          val key = Writeboost.StatKey(false, true, true, false)
+          assert(st2.stat(key) > st1.stat(key))
+        }
+      }
+    }
+  }
+  test("write: compose: cached data + write data (really compose)") {
   }
 }

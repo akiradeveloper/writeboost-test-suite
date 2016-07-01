@@ -15,4 +15,10 @@ class DataBufferTest extends DMTestSuite {
   test("rand buffer is not zeroed") {
     assert(!DataBuffer.random(1000).isZeroed)
   }
+  test("overwrite") {
+    val a = DataBuffer.random(1000)
+    val b = DataBuffer.random(100)
+    val c = a.overwrite(30, b)
+    assert(!a.isSameAs(c))
+  }
 }

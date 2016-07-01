@@ -26,11 +26,13 @@ case class DataBuffer(unwrap: Array[Byte]) {
   }
   def size = unwrap.length
   def isZeroed: Boolean = isSameAs(DataBuffer.zeroed(unwrap.length))
-  def overwrite(offset: Int, src: DataBuffer) = {
+  def overwrite(offset: Int, src: DataBuffer): DataBuffer = {
+    val ret = DataBuffer(unwrap.clone())
     for (i <- 0 until src.size) {
       assert(offset + i < this.size)
-      unwrap.update(offset + i, src.unwrap(i))
+      ret.unwrap.update(offset + i, src.unwrap(i))
     }
+    ret
   }
   def slice(offset: Int, len: Int): DataBuffer = {
     val b = Array.ofDim[Byte](len)
