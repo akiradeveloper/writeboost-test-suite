@@ -6,9 +6,10 @@ import dmtest.stack._
 
 class REPRO_111 extends DMTestSuite {
   test("luks on top of writeboost") {
-    slowDevice(Sector.G(12)) { slow =>
-      fastDevice(Sector.M(32)) { fast =>
-        Writeboost.Table(slow, fast).create { wb =>
+    slowDevice(Sector.G(12)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { wb =>
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
