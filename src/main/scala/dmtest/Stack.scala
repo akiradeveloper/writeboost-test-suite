@@ -12,8 +12,14 @@ trait Stack {
   //   }
   // }
   private var locked: Int = 0
-  def lock(): Unit = { locked += 1 }
-  def unlock(): Unit = { locked -= 1 }
+  def lock(): Unit = {
+    logger.debug(s"lock path=${path}")
+    locked += 1
+  }
+  def unlock(): Unit = {
+    logger.debug(s"unlock path=${path}")
+    locked -= 1
+  }
 
   // lock is a mechanism to manage the lifetime of stacks.
   // stack1 {
