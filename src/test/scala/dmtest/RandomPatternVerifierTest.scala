@@ -3,16 +3,17 @@ package dmtest
 import dmtest.stack.{Loopback, Memory}
 
 class RandomPatternVerifierTest extends DMTestSuite {
-  test("make random byte buffer") {
-    val a = ByteBuffers.mkRandomByteBuffer(1024)
-    assert(ByteBuffers.areTheSame(a, a))
-    val b = ByteBuffers.mkRandomByteBuffer(1024)
-    assert(!ByteBuffers.areTheSame(a, b))
-  }
-  test("stamp and verify") {
-    Memory(Sector.M(16)) { s =>
+  test("stamp and verify (5%)") {
+    Memory(Sector.M(128)) { s =>
       val ps = new RandomPatternVerifier(s, Sector.K(4))
       ps.stamp(5)
+      assert(ps.verify())
+    }
+  }
+  test("stamp and verify (20%)") {
+    Memory(Sector.M(128)) { s =>
+      val ps = new RandomPatternVerifier(s, Sector.K(4))
+      ps.stamp(20)
       assert(ps.verify())
     }
   }

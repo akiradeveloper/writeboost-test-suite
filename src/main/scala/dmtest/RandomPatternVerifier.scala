@@ -20,6 +20,8 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
       DeltaBlock(offset)
     }
 
+    logger.debug(s"stamp #${nblocks} delta blocks")
+
     var count = nblocks
     while (count > 0) {
       val b = mkBlock
@@ -42,6 +44,9 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
   def verify(withStack: Stack = this.stack): Boolean = {
     val chan = Files.newByteChannel(withStack.bdev.path, StandardOpenOption.READ)
     var success = true
+
+    logger.debug(s"verify #${delta.size} delta blocks")
+
     delta.foreach { b =>
       val buf = ByteBuffer.allocate(blockSize.toB.toInt)
       chan.position(b.offset.toB)

@@ -16,6 +16,12 @@ class MiscTest extends DMTestSuite {
     }
     logger.info(output)
   }
+  test("make random byte buffer") {
+    val a = ByteBuffers.mkRandomByteBuffer(1024)
+    assert(ByteBuffers.areTheSame(a, a))
+    val b = ByteBuffers.mkRandomByteBuffer(1024)
+    assert(!ByteBuffers.areTheSame(a, b))
+  }
   test("two rand buffers are not equal") {
     val a = ByteBuffers.mkRandomByteBuffer(1000)
     val b = ByteBuffers.mkRandomByteBuffer(1000)
