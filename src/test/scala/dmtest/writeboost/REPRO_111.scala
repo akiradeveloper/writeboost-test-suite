@@ -16,7 +16,6 @@ class REPRO_111 extends DMTestSuite {
         )
         Writeboost.Table(backing, caching, options).create { wb =>
           Luks(wb) { s =>
-            Shell(s"badblocks -svw ${s.bdev.path}") // destructive write then read
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
               Shell.at(mp)(s"stress -v --timeout 30 --hdd 4 --hdd-bytes 512M")
