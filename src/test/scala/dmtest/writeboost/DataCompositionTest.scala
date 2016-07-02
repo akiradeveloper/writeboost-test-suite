@@ -181,7 +181,7 @@ class DataCompositionTest extends DMTestSuite {
           DropTransient()
         case _ =>
           val offset = Random.nextInt(8)
-          val len = Random.nextInt(8 - offset)
+          val len = Random.nextInt(8 - offset) + 1
           val data = DataBuffer.random(Sector(len).toB.toInt)
           Write(Sector(offset), data)
       }
