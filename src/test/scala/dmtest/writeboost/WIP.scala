@@ -5,6 +5,13 @@ import dmtest.stack._
 import dmtest.fs._
 
 class WIP extends DMTestSuite {
+  test("read: no writeboost") {
+    slowDevice(Sector.G(1)) { backing =>
+      val base = DataBuffer.random(Sector(8).toB.toInt)
+      backing.bdev.write(Sector(0), base)
+      assert(backing.bdev.read(Sector(0), Sector(8)) isSameAs base)
+    }
+  }
   test("read: no caching") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
