@@ -19,18 +19,18 @@ class WIP extends DMTestSuite {
           s.dropTransient()
 
           val D2 = DataBuffer.random(Sector(1).toB.toInt)
+          val st1 = s.status
           s.bdev.write(Sector(2), D2)
+          val st2 = s.status
+          val key = Writeboost.StatKey(true, true, false, false)
+          assert(st2.stat(key) > st1.stat(key))
 
           val expected = base
             .overwrite(Sector(1).toB.toInt, D1)
             .overwrite(Sector(2).toB.toInt, D2)
 
           // bb 11 22 11 bb bb bb bb
-          val st1 = s.status
           assert(s.bdev.read(Sector(0), Sector(8)) isSameAs expected)
-          val st2 = s.status
-          val key = Writeboost.StatKey(true, true, false, true)
-          assert(st2.stat(key) > st1.stat(key))
         }
       }
     }
@@ -48,18 +48,18 @@ class WIP extends DMTestSuite {
           s.dropTransient()
 
           val D2 = DataBuffer.random(Sector(3).toB.toInt)
+          val st1 = s.status
           s.bdev.write(Sector(1), D2)
+          val st2 = s.status
+          val key = Writeboost.StatKey(true, true, false, false)
+          assert(st2.stat(key) > st1.stat(key))
 
           val expected = base
             .overwrite(Sector(2).toB.toInt, D1)
             .overwrite(Sector(1).toB.toInt, D2)
 
           // bb 22 22 22 bb bb bb bb
-          val st1 = s.status
           assert(s.bdev.read(Sector(0), Sector(8)) isSameAs expected)
-          val st2 = s.status
-          val key = Writeboost.StatKey(true, true, false, true)
-          assert(st2.stat(key) > st1.stat(key))
         }
       }
     }
@@ -75,7 +75,7 @@ class WIP extends DMTestSuite {
           var expected = base
 
           val startId = s.status.currentId
-          for (_ <- 0 until 1000) {
+          for (_ <- 0 until 10000) {
             val offset = Random.nextInt(8)
             val len = Random.nextInt(8 - offset) + 1
             val data = DataBuffer.random(Sector(len).toB.toInt)
@@ -85,7 +85,7 @@ class WIP extends DMTestSuite {
             assert(s.bdev.read(Sector(0), Sector(8)) isSameAs expected)
           }
           // never flush the rambuf
-          assert(s.status.currentId === startId)
+          // assert(s.status.currentId === startId)
         }
       }
     }
