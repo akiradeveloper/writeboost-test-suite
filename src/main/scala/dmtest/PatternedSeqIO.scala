@@ -38,25 +38,18 @@ class PatternedSeqIO(pat: Seq[PatternedSeqIO.Pattern]) {
 
       return false
     }
-    val chan = Files.newByteChannel(s.bdev.path, StandardOpenOption.READ, StandardOpenOption.WRITE)
     while (!shouldQuit) {
       pat.foreach { _ match {
         case Write(len) =>
           val buf = DataBuffer.random(len.toB.toInt)
-
-          chan.position(cursor.toB)
-          chan.write(buf.refByteBuffer)
+          s.bdev.write(cursor, buf)
           cursor += len
         case Read(len) =>
-          val buf = DataBuffer.allocate(len.toB.toInt)
-
-          chan.position(cursor.toB)
-          chan.read(buf.refByteBuffer)
+          val buf = s.bdev.read(cursor, len)
           cursor += len
         case Skip(len) =>
           cursor += len
       }}
     }
-    chan.close()
   }
 }

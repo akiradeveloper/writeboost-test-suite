@@ -33,29 +33,22 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     writeBlocks(delta)
   }
   private def writeBlocks(blocks: Iterable[DeltaBlock]) = {
-    val chan = Files.newByteChannel(stack.bdev.path, StandardOpenOption.WRITE)
     blocks.foreach { b =>
-      chan.position(b.offset.toB)
-      chan.write(b.data.refByteBuffer)
+      stack.bdev.write(b.offset, b.data)
     }
-    chan.close
   }
   def verify(withStack: Stack = this.stack): Boolean = {
-    val chan = Files.newByteChannel(withStack.bdev.path, StandardOpenOption.READ)
     var success = true
 
     logger.debug(s"verify #${delta.size} delta blocks")
 
     delta.foreach { b =>
-      val buf = DataBuffer.allocate(blockSize.toB.toInt)
-      chan.position(b.offset.toB)
-      chan.read(buf.refByteBuffer)
+      val buf = withStack.bdev.read(b.offset, blockSize)
       if (!b.matchBytes(buf)) {
         logger.error(s"offset ${b.offset} didn't match")
         success = false
       }
     }
-    chan.close
     success
   }
 }
