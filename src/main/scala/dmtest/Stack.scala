@@ -13,11 +13,11 @@ trait Stack {
   // }
   private var locked: Int = 0
   def lock(): Unit = {
-    logger.debug(s"lock path=${path}")
+    // logger.debug(s"lock path=${path}")
     locked += 1
   }
   def unlock(): Unit = {
-    logger.debug(s"unlock path=${path}")
+    // logger.debug(s"unlock path=${path}")
     locked -= 1
   }
 

@@ -6,7 +6,7 @@ import scala.sys.process._
 
 case class BlockDevice(path: Path) {
   def size: Sector = Sector(Shell(s"blockdev --getsize ${path}").toLong)
-  def zeroFill(): Unit = Shell(s"dd if=/dev/zero of=${path} bs=512 count=${size}")
+  def zeroFill(): Unit = Shell(s"dd status=none if=/dev/zero of=${path} bs=512 count=${size}")
   def read(offset: Sector, len: Sector): DataBuffer = {
     stack.Memory(len) { s =>
       Shell(s"dd status=none bs=512 if=${path} iflag=direct skip=${offset.unwrap} of=${s.bdev.path} count=${len.unwrap}")
