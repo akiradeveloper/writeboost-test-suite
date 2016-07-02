@@ -17,4 +17,15 @@ class StackTest extends DMTestSuite {
       }
     }
   }
+  test("discard isn't supported") {
+    slowDevice(Sector.M(16)) { backing =>
+      fastDevice(Sector.M(4)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          val res = Shell.sync(s"blkdiscard --offset=0 --length=4096 ${s.bdev.path}")
+          assert(res.isLeft)
+        }
+      }
+    }
+  }
 }
