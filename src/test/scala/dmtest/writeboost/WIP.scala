@@ -15,11 +15,11 @@ class WIP extends DMTestSuite {
   test("read: no caching") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
+        val base = DataBuffer.random(Sector(8).toB.toInt)
+        backing.bdev.write(Sector(0), base)
+
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          val base = DataBuffer.random(Sector(8).toB.toInt)
-          backing.bdev.write(Sector(0), base)
-
           val st1 = s.status
           assert(s.bdev.read(Sector(0), Sector(8)) isSameAs base)
           val st2 = s.status
@@ -32,11 +32,11 @@ class WIP extends DMTestSuite {
   test("read: compose: rambuf data + backing") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
+        val base = DataBuffer.random(Sector(8).toB.toInt)
+        backing.bdev.write(Sector(0), base)
+
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          val base = DataBuffer.random(Sector(8).toB.toInt)
-          backing.bdev.write(Sector(0), base)
-
           val D1 = DataBuffer.random(Sector(1).toB.toInt)
           s.bdev.write(Sector(1), D1)
 
@@ -54,11 +54,11 @@ class WIP extends DMTestSuite {
   test("read: compose: cached data + backing") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
+        val base = DataBuffer.random(Sector(8).toB.toInt)
+        backing.bdev.write(Sector(0), base)
+
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          val base = DataBuffer.random(Sector(8).toB.toInt)
-          backing.bdev.write(Sector(0), base)
-
           val D1 = DataBuffer.random(Sector(1).toB.toInt)
           s.bdev.write(Sector(1), D1) // rambuf
 
@@ -78,11 +78,11 @@ class WIP extends DMTestSuite {
   test("read: compose: rambuf overwrite cached data + backing"){
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
+        val base = DataBuffer.random(Sector(8).toB.toInt)
+        backing.bdev.write(Sector(0), base)
+
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          val base = DataBuffer.random(Sector(8).toB.toInt)
-          backing.bdev.write(Sector(0), base)
-
           val D1 = DataBuffer.random(Sector(1).toB.toInt)
           s.bdev.write(offset = Sector(1), D1)
 
@@ -107,11 +107,11 @@ class WIP extends DMTestSuite {
   test("read: compose: rambuf not overwrite cached data + backing"){
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
+        val base = DataBuffer.random(Sector(8).toB.toInt)
+        backing.bdev.write(Sector(0), base)
+
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          val base = DataBuffer.random(Sector(8).toB.toInt)
-          backing.bdev.write(Sector(0), base)
-
           val D1 = DataBuffer.random(Sector(1).toB.toInt)
           s.bdev.write(offset = Sector(1), D1)
 

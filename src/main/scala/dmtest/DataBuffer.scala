@@ -25,7 +25,7 @@ case class DataBuffer(unwrap: Array[Byte]) {
     }
     unwrap.zip(that.unwrap).zipWithIndex.foreach { case ((a, b), i) =>
         if (a != b) {
-          logger.debug(s"buffers not the same first at index=${i} (${a} != ${b})")
+          logger.debug(s"buffers not the same the first time at index=${i} (${a} != ${b})")
           return false
         }
     }
