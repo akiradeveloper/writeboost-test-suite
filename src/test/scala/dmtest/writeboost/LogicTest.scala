@@ -93,14 +93,14 @@ class LogicTest extends DMTestSuite {
         Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127)).create { s =>
           import scala.concurrent.ExecutionContext.Implicits.global
 
-          val f1 = Future(Shell.sync(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000"))
-          val f2 = Future(Shell.sync(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M skip=500 count=1000"))
+          val f1 = Future(Shell.sync(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000"))
+          val f2 = Future(Shell.sync(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null bs=1M skip=500 count=1000"))
           val fx = Future.sequence(Seq(f1, f2))
           val result = Await.result(fx, Duration.Inf)
           assert(result.forall(_.isRight))
 
           val st1 = Writeboost.Status.parse(s.dm.status())
-          Shell(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000")
+          Shell(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null bs=1M count=1000")
           val st2 = Writeboost.Status.parse(s.dm.status())
           val key = Writeboost.StatKey(false, true, false, true)
           assert(st2.stat(key) === st1.stat(key))

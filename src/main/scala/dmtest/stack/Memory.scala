@@ -16,7 +16,7 @@ case class Memory(size: Sector) extends Stack {
   Shell(s"mount -t tmpfs -o size=${size.toB} ${name} ${dirPath}")
 
   // oflag=direct is invalid for files under tmpfs
-  Shell(s"dd if=/dev/zero of=${filePath} bs=512 count=${size}")
+  Shell(s"dd status=none if=/dev/zero of=${filePath} bs=512 count=${size}")
   private val loopDevice = Paths.get(Shell("losetup -f"))
   Shell(s"losetup ${loopDevice} ${filePath}")
 
