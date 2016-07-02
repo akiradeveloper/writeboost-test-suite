@@ -19,10 +19,17 @@ object DataBuffer {
 // immutable data buffer
 case class DataBuffer(unwrap: Array[Byte]) {
   def isSameAs(that: DataBuffer): Boolean = {
-    if (unwrap.length != that.unwrap.length)
+    if (unwrap.length != that.unwrap.length) {
+      logger.debug(s"buffers not the same length (${unwrap.length} != ${that.unwrap.length})")
       return false
-    val len: Int = unwrap.length
-    unwrap.zip(that.unwrap).forall { case (a, b) => a == b }
+    }
+    unwrap.zip(that.unwrap).zipWithIndex.foreach { case ((a, b), i) =>
+        if (a != b) {
+          logger.debug(s"buffers not the same first at index=${i} (${a} != ${b})")
+          return false
+        }
+    }
+    true
   }
   def size = unwrap.length
   def isZeroed: Boolean = isSameAs(DataBuffer.zeroed(unwrap.length))
