@@ -1,6 +1,6 @@
 package dmtest
 
-import dmtest.stack.{Writeboost, Memory}
+import dmtest.stack._
 import org.scalatest._
 
 class StackTest extends DMTestSuite {
@@ -24,6 +24,18 @@ class StackTest extends DMTestSuite {
         assert(s2.exists)
       }
       assert(s.exists)
+    }
+  }
+  test("flakey") {
+    Memory(Sector.M(16)) { backing =>
+      // uptime=3sec, downtime=1sec
+      Flakey.Table(backing, 3, 1).create { s =>
+        intercept[Exception] {
+          while (true) {
+            Shell(s"dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1")
+          }
+        }
+      }
     }
   }
   test("memory") {
