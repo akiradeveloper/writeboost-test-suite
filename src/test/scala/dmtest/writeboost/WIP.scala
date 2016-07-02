@@ -13,12 +13,8 @@ class WIP extends DMTestSuite {
           val base = DataBuffer.random(Sector(8).toB.toInt)
           backing.bdev.write(Sector(0), base)
 
-          val D1 = DataBuffer.random(Sector(1).toB.toInt)
-          backing.bdev.write(Sector(1), D1)
-
           // bb 11 bb bb bb bb bb bb
           val shouldRead: DataBuffer = base
-            .overwrite(Sector(1).toB.toInt, D1)
           val st1 = s.status
           assert(s.bdev.read(Sector(0), Sector(8)) isSameAs shouldRead)
           val st2 = s.status
