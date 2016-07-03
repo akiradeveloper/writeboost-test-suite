@@ -13,7 +13,7 @@ case class BlockDevice(path: Path) {
   def zeroFill(): Unit = Shell(s"dd status=none if=/dev/zero of=${path} bs=512 count=${size}")
   def read(offset: Sector, len: Sector): DataBuffer = {
     TempFile { tmp =>
-      Shell(s"dd status=none bs=512 if=${path} iflag=direct skip=${offset.unwrap} of=${tmp} count=${len.unwrap}")
+      Shell(s"dd status=none bs=${len.toB} if=${path} iflag=direct,skip_bytes skip=${offset.toB} of=${tmp} count=1")
       val buf = Array.ofDim[Byte](len.toB.toInt)
       val chan = Files.newByteChannel(tmp, StandardOpenOption.READ)
       try {
@@ -27,7 +27,6 @@ case class BlockDevice(path: Path) {
   }
   def write(offset: Sector, buf: DataBuffer): Unit = {
     TempFile { tmp =>
-      val len = Sector(buf.size / 512)
       val chan = Files.newByteChannel(tmp, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW)
       try {
         chan.position(0)
@@ -35,7 +34,7 @@ case class BlockDevice(path: Path) {
       } finally {
         chan.close()
       }
-      Shell(s"dd status=none bs=512 if=${tmp} of=${path} oflag=direct seek=${offset.unwrap} count=${len.unwrap}")
+      Shell(s"dd status=none bs=${buf.size} if=${tmp} of=${path} oflag=direct,seek_bytes seek=${offset.toB} count=1")
     }
   }
 }
