@@ -1,6 +1,7 @@
 package dmtest
 
 import java.nio.file.{StandardOpenOption, Files}
+import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.util.Random
 
@@ -33,22 +34,22 @@ class RandomPatternVerifier(stack: Stack, blockSize: Sector) {
     writeBlocks(delta)
   }
   private def writeBlocks(blocks: Iterable[DeltaBlock]) = {
-    blocks.foreach { b =>
+    blocks.par.foreach { b =>
       stack.bdev.write(b.offset, b.data)
     }
   }
   def verify(withStack: Stack = this.stack): Boolean = {
-    var success = true
+    val success = new AtomicBoolean(true)
 
     logger.debug(s"verify #${delta.size} delta blocks")
 
-    delta.foreach { b =>
+    delta.par.foreach { b =>
       val buf = withStack.bdev.read(b.offset, blockSize)
       if (!b.matchBytes(buf)) {
         logger.error(s"offset ${b.offset} didn't match")
-        success = false
+        success.set(false)
       }
     }
-    success
+    success.get()
   }
 }

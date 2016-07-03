@@ -2,6 +2,7 @@ package dmtest
 
 import java.io.{FileWriter, File}
 import java.nio.file.{Files, Paths, Path}
+import java.util.concurrent.atomic.AtomicLong
 
 object TempFile {
   val POOLDIR = Paths.get("/mnt/dmtest")
@@ -16,10 +17,9 @@ object TempFile {
     Shell(s"umount ${POOLDIR}")
     Files.deleteIfExists(POOLDIR)
   }
-  var i = 0
+  private val i = new AtomicLong(0)
   def alloc(): Path =  {
-    val p = Paths.get(s"${POOLDIR}/${i}")
-    i += 1
+    val p = Paths.get(s"${POOLDIR}/${i.getAndIncrement()}")
     p
   }
   def apply[A](fn: Path => A): A = {
