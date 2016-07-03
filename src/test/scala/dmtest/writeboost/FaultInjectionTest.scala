@@ -11,9 +11,9 @@ class FaultInjectionTest extends DMTestSuite {
       fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
         Writeboost.sweepCaches(fast)
         Writeboost.Table(slow, fast).create { s =>
-          slow.reload(Flakey.Table(slow, 1, 1))
-          fast.reload(Flakey.Table(fast, 1, 1))
-          // Shell(s"fio --name=test --filename=${s.bdev.path} --rw=randrw --bs=4k --runtime=30s")
+          slow.reload(Flakey.Table(_slow, 1, 1)) // should use _slow
+          fast.reload(Flakey.Table(_fast, 1, 1))
+          Shell(s"fio --name=test --filename=${s.bdev.path} --rw=randrw --bs=4k --runtime=30s")
         } // can be removed (not blocked up)
       }}
     }}
