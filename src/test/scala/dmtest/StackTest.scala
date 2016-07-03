@@ -15,7 +15,7 @@ class StackTest extends DMTestSuite {
   test("luks") {
     Memory(Sector.M(16)) { s =>
       stack.Luks(s) { s2 =>
-        Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
+        Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
         assert(s2.exists)
       }
       assert(s.exists)
@@ -27,7 +27,7 @@ class StackTest extends DMTestSuite {
       Flakey.Table(backing, 3, 1).create { s =>
         intercept[Exception] {
           while (true) {
-            Shell(s"dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1")
+            Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1")
           }
         }
       }

@@ -28,7 +28,7 @@ class PerfTest extends DMTestSuite {
           Writeboost.sweepCaches(caching)
           Writeboost.Table(backing, caching).create { s =>
             reportTime(s"iosize=${iosize}") {
-              Shell(s"dd if=${s.bdev.path} iflag=direct of=/dev/null bs=${iosize}")
+              Shell(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null bs=${iosize}")
             }
           }
         }

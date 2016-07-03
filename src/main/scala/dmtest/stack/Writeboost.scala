@@ -4,7 +4,7 @@ import dmtest._
 import scala.collection.mutable
 
 object Writeboost {
-  def sweepCaches(cacheDev: Stack) = Shell(s"dd if=/dev/zero of=${cacheDev.bdev.path} oflag=direct bs=512 count=1")
+  def sweepCaches(cacheDev: Stack) = Shell(s"dd status=none if=/dev/zero of=${cacheDev.bdev.path} oflag=direct bs=512 count=1")
   case class Table(backingDev: Stack, cacheDev: Stack, tunables: Map[String, Int] = Map.empty) extends DMTable[Writeboost] {
     private def validateOptionals(x: String): Unit = {
       val allowed = Seq(

@@ -24,7 +24,7 @@ class RandomPatternVerifierTest extends DMTestSuite {
       rp.stamp(5)
       assert(rp.verify())
       Memory(sz) { s2 =>
-        Shell(s"dd if=${s1.bdev.path} of=${s2.bdev.path} bs=512 count=${sz.unwrap}")
+        Shell(s"dd status=none if=${s1.bdev.path} of=${s2.bdev.path} bs=512 count=${sz.unwrap}")
         assert(rp.verify(withStack = s2))
       }
     }

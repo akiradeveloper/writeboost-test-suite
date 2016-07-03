@@ -225,9 +225,8 @@ class DataCompositionTest extends DMTestSuite {
           val st1 = s.status
           s.bdev.write(Sector(2), D2)
           val st2 = s.status
-          // FIXME it seems to be read-modify-write that the underlying chan does when interfacing the block device
           val key = Writeboost.StatKey(true, true, false, false)
-          // assert(st2.stat(key) > st1.stat(key))
+          assert(st2.stat(key) > st1.stat(key))
 
           val expected = base
             .overwrite(Sector(1).toB.toInt, D1)
@@ -256,7 +255,7 @@ class DataCompositionTest extends DMTestSuite {
           s.bdev.write(Sector(1), D2)
           val st2 = s.status
           val key = Writeboost.StatKey(true, true, false, false)
-          // assert(st2.stat(key) > st1.stat(key))
+          assert(st2.stat(key) > st1.stat(key))
 
           val expected = base
             .overwrite(Sector(2).toB.toInt, D1)
@@ -288,8 +287,7 @@ class DataCompositionTest extends DMTestSuite {
             expected = expected.overwrite(Sector(offset).toB.toInt, data)
             assert(s.bdev.read(Sector(0), Sector(8)) isSameAs expected)
           }
-          // FIXME never flush the rambuf
-          // assert(s.status.currentId === startId)
+          assert(s.status.currentId === startId + 1)
         }
       }
     }

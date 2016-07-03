@@ -6,9 +6,11 @@ object Config {
   def readConfig(path: Path): Option[Config] = {
     if (Files.exists(path)) {
       val prop = new java.util.Properties()
+
       val inp = Files.newInputStream(path)
-      prop.load(inp)
-      inp.close()
+      try prop.load(inp)
+      finally inp.close()
+
       val slowDevice = prop.getProperty("slow_device")
       val fastDevice = prop.getProperty("fast_device")
       Some(Config(
