@@ -1,6 +1,6 @@
 package dmtest.stack
 
-import java.nio.file.{Paths, Path}
+import java.nio.file.{Files, Paths, Path}
 
 import dmtest._
 
@@ -9,7 +9,7 @@ import scala.sys.process._
 object Luks {
 }
 case class Luks(backing: Stack) extends Stack {
-  val keyFile = TempFile("aaaa")
+  val keyFile = TempFile.text("aaaa")
 
   Shell(s"cryptsetup luksFormat ${backing.bdev.path} --key-file=${keyFile}")
   val name = RandName.alloc
@@ -20,5 +20,6 @@ case class Luks(backing: Stack) extends Stack {
 
   override protected def terminate(): Unit = {
     Shell(s"cryptsetup luksClose ${name}")
+    Files.deleteIfExists(keyFile)
   }
 }

@@ -13,7 +13,7 @@ class PoolTest extends DMTestSuite {
     fa.getFreeSpace(Sector(1))
   }
   test("pool") {
-    stack.Loopback(Sector.K(32)) { s =>
+    Memory(Sector.K(32)) { s =>
       val pool = new stack.Pool(s)
       val d1 = stack.Pool.S(pool, Sector.K(18))
       assert(d1.exists)
@@ -37,8 +37,8 @@ class PoolTest extends DMTestSuite {
   }
   test("pool and linear")  {
     val sz = Sector.K(32)
-    Loopback(sz) { loopback =>
-      val pool = new Pool(loopback)
+    Memory(sz) { mem =>
+      val pool = new Pool(mem)
       Pool.S(pool, sz) { pooled =>
         Linear.Table(pooled, Sector(0), sz).create { s =>
           assert(s.exists)

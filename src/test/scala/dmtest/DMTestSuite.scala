@@ -2,7 +2,7 @@ package dmtest
 
 import java.nio.file.{Path, Paths}
 
-import dmtest.stack.{Memory, Direct, Loopback, Pool}
+import dmtest.stack.{Memory, Direct, Pool}
 import org.scalatest._
 
 trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAll {
@@ -40,6 +40,7 @@ trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAl
       slowPool = Pool(Direct(config.slowDevice))
       fastPool = Pool(Direct(config.fastDevice))
     }
+
   }
   override def afterAll = {
   }
@@ -58,9 +59,11 @@ trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAl
   override def beforeEach = {
     _numMount = numMount
     _numTable = numTable
+    TempFile.mount()
   }
 
   override def afterEach = {
+    TempFile.umount()
     if (numMount != _numMount)
       logger.error("mount inconsistent before and after test")
     if (numTable != _numTable)

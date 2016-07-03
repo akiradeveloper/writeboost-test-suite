@@ -1,6 +1,6 @@
 package dmtest
 
-import dmtest.stack.{Loopback, Memory}
+import dmtest.stack.Memory
 
 class RandomPatternVerifierTest extends DMTestSuite {
   test("stamp and verify (5%)") {
@@ -23,7 +23,7 @@ class RandomPatternVerifierTest extends DMTestSuite {
       val rp = new RandomPatternVerifier(s1, Sector.K(4))
       rp.stamp(5)
       assert(rp.verify())
-      Loopback(sz) { s2 =>
+      Memory(sz) { s2 =>
         Shell(s"dd if=${s1.bdev.path} of=${s2.bdev.path} bs=512 count=${sz.unwrap}")
         assert(rp.verify(withStack = s2))
       }

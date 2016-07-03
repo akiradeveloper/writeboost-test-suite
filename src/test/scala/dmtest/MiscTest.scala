@@ -1,6 +1,6 @@
 package dmtest
 
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 import dmtest._
 import dmtest.stack._
 
@@ -17,6 +17,10 @@ class MiscTest extends DMTestSuite {
       "ls"
     }
     logger.info(output)
+  }
+  test("tmp text file") {
+    val f = TempFile.text("aaaaa")
+    Files.deleteIfExists(f)
   }
   test("block device write then read") {
     Memory(Sector.M(10)) { s =>

@@ -3,12 +3,12 @@ package dmtest
 import java.nio.file.Files
 
 import dmtest.fs.{EXT4, XFS}
-import dmtest.stack.{Memory, Loopback}
+import dmtest.stack.Memory
 import org.scalatest.FunSuite
 
 class FileSystemTest extends DMTestSuite {
   test("mkfs.xfs") {
-    Loopback(Sector.M(32)) { s =>
+    Memory(Sector.M(32)) { s =>
       XFS.format(s)
       XFS.Mount(s) { mp =>
         val f = mp.resolve("a")
@@ -17,7 +17,7 @@ class FileSystemTest extends DMTestSuite {
     }
   }
   test("mkfs.ext4") {
-    Loopback(Sector.M(16)) { s =>
+    Memory(Sector.M(16)) { s =>
       EXT4.format(s)
       EXT4.Mount(s) { mp =>
         val f = mp.resolve("b")

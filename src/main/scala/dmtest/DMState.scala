@@ -1,5 +1,7 @@
 package dmtest
 
+import java.nio.file.Files
+
 object DMState {
   case class Table(start: Sector, len: Sector, target: String, args: Array[String])
   case class Status(start: Sector, len: Sector, target: String, args: Array[String])
@@ -11,7 +13,12 @@ class DMState(val name: String) {
   def remove() = Shell(s"dmsetup remove ${name}")
   def reload(table: String) = {
     logger.debug(s"reload: table=${table}")
-    Shell(s"dmsetup reload ${name} ${TempFile(table)}")
+    val f = TempFile.text(table)
+    try {
+      Shell(s"dmsetup reload ${name} ${f}")
+    } finally {
+      Files.deleteIfExists(f)
+    }
   }
   def suspend() = Shell(s"dmsetup suspend ${name}")
   def resume() = Shell(s"dmsetup resume ${name}")
