@@ -48,14 +48,6 @@ class StackTest extends DMTestSuite {
       assert(s1.exists)
     }
   }
-  test("self nesting") {
-    Memory(Sector.K(1)) { s1 =>
-      s1 { s2 =>
-        assert(s2.exists)
-      }
-      assert(s1.exists)
-    }
-  }
 // FIXME (fails to umount at around 500th)
 //  test("stack (not leaking)") {
 //    (0 until 100000).foreach { _ => // 100GB in total

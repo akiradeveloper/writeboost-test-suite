@@ -21,7 +21,7 @@ class PoolTest extends DMTestSuite {
       assert(d2.exists)
       val d3 = stack.Pool.S(pool, Sector.K(5))
       assert(d3.exists)
-      d2.purge()
+      d2.terminate()
       val d4 = stack.Pool.S(pool, Sector.K(8))
       assert(d4.exists)
       val d5 = stack.Pool.S(pool, Sector.K(1))
@@ -29,10 +29,10 @@ class PoolTest extends DMTestSuite {
 
       // should purge the linear devices
       // otherwise the backing loopback device can't be detached because of reference count remained.
-      d1.purge()
-      d3.purge()
-      d4.purge()
-      d5.purge()
+      d1.terminate()
+      d3.terminate()
+      d4.terminate()
+      d5.terminate()
     }
   }
   test("pool and linear")  {

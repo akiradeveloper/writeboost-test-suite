@@ -7,33 +7,12 @@ trait Stack {
 
   def bdev: BlockDevice = BlockDevice(path)
 
-  // stack1 { s =>
-  //   s {
-  //   }
-  // }
-  private var locked: Int = 0
-  def lock(): Unit = {
-    // logger.debug(s"lock path=${path}")
-    locked += 1
-  }
-  def unlock(): Unit = {
-    // logger.debug(s"unlock path=${path}")
-    locked -= 1
-  }
-
-  // lock is a mechanism to manage the lifetime of stacks.
-  // stack1 {
-  //   stack2(stack1) {
-  //   } // stack1 isn't removed because it's protected
-  // } // stack1 is removed here
   def apply[A](f: this.type => A): A = {
     val resource: this.type = this
-    lock
     try {
       f(resource)
     } finally {
-      unlock
-      purge
+      terminate()
     }
   }
 // experimental. can't be compiled
@@ -49,15 +28,4 @@ trait Stack {
   def exists: Boolean = bdev.size > Sector(0)
 
   protected def terminate(): Unit
-  protected def subStacks: Iterable[Stack] = Iterable.empty
-
-  // don't call this directly
-  final def purge(): Unit = {
-    if (locked > 0) {
-      logger.debug(s"${path} is locked")
-      return
-    }
-    terminate()
-    subStacks.foreach(_.purge())
-  }
 }

@@ -54,7 +54,7 @@ case class Pool(pool: Stack) {
     Linear.Table(pool, space.start, space.len).create
   }
   def free(linearS: Linear): Unit = {
-    linearS.purge()
+    linearS.terminate()
     val space = Range(linearS.start, linearS.len)
     freeArea.release(space)
   }
