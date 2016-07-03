@@ -7,7 +7,7 @@ trait DMStack extends Stack {
   def path = Paths.get(s"/dev/mapper/${dm.name}")
   def reload[S <: DMStackDecorator[S]](table: DMTable[S]): S = {
     dm.suspend()
-    val res = table.f(this) // does reload on creating the new stack
+    val res = table.f(this) // does dm.reload on creating the new stack
     dm.resume()
     assert(exists)
     res

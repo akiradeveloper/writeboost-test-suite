@@ -9,6 +9,9 @@ object Linear {
     override def f: (DMStack) => Linear = (st: DMStack) => Linear(st, this)
     override def line: String = s"0 ${len} linear ${backing.bdev.path} 0"
   }
+  object Table {
+    def apply(backing: Stack): DMTable[Linear] = Table(backing, Sector(0), backing.bdev.size)
+  }
 }
 case class Linear(delegate: DMStack, table: Linear.Table) extends DMStackDecorator[Linear] {
   override def subStacks = Seq(table.backing)
