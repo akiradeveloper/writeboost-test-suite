@@ -175,7 +175,7 @@ class DataCompositionTest extends DMTestSuite {
       }
     }
     val base = DataBuffer.random(Sector(8).toB.toInt)
-    val inputs = (0 until 10000).map { _ =>
+    val inputs = (0 until 100).map { _ =>
       Random.nextInt(3) match {
         case 3 =>
           DropTransient()
@@ -278,7 +278,7 @@ class DataCompositionTest extends DMTestSuite {
           var expected = base
 
           val startId = s.status.currentId
-          for (_ <- 0 until 10000) {
+          for (_ <- 0 until 100) {
             val offset = Random.nextInt(8)
             val len = Random.nextInt(8 - offset) + 1
             val data = DataBuffer.random(Sector(len).toB.toInt)
