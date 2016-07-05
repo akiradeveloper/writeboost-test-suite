@@ -11,8 +11,8 @@ class FaultInjectionTest extends DMTestSuite {
       fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
         Writeboost.sweepCaches(fast)
         Writeboost.Table(slow, fast).create { s =>
-          slow.reload(Flakey.Table(_slow, 0, 1)) // should use _slow
-          fast.reload(Flakey.Table(_fast, 0, 1))
+          slow.reload(Flakey.Table(_slow, 1, 1)) // should use _slow
+          fast.reload(Flakey.Table(_fast, 1, 1))
           // error detected from backing device
           logger.info("reading")
           intercept[Exception] {
@@ -22,7 +22,7 @@ class FaultInjectionTest extends DMTestSuite {
           }
           // no room in rambuf so timeout
           logger.info("writing")
-          Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=1m count=16")
+          Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000")
         } // can be removed (not blocked up)
       }}
     }}
