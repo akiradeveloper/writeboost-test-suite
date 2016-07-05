@@ -228,7 +228,7 @@ class DataCompositionTest extends DMTestSuite {
       }
     }
   }
-  test("write: compose: cached data + write data (partial overwrite)") {
+  test("write: cached data + write data (partial overwrite)") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         val base = DataBuffer.random(Sector(8).toB.toInt)
@@ -257,7 +257,7 @@ class DataCompositionTest extends DMTestSuite {
       }
     }
   }
-  test("write: compose: cached data + write data (entirely overwrite)") {
+  test("write: cached data + write data (entirely overwrite)") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         val base = DataBuffer.random(Sector(8).toB.toInt)

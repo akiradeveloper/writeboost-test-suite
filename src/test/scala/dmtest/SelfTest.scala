@@ -11,6 +11,5 @@ class SelfTest extends Suites(
   new DMStateTest,
   new FileSystemTest,
   new RandomPatternVerifierTest,
-  new PatternedSeqIOTest,
-  new writeboost.PureTest
+  new PatternedSeqIOTest
 )

@@ -4,21 +4,21 @@ import dmtest.stack.Memory
 
 class RandomPatternVerifierTest extends DMTestSuite {
   test("stamp and verify (5%)") {
-    Memory(Sector.M(128)) { s =>
+    Memory(Sector.M(16)) { s =>
       val ps = new RandomPatternVerifier(s, Sector.K(4))
       ps.stamp(5)
       assert(ps.verify())
     }
   }
   test("stamp and verify (20%)") {
-    Memory(Sector.M(128)) { s =>
+    Memory(Sector.M(16)) { s =>
       val ps = new RandomPatternVerifier(s, Sector.K(4))
       ps.stamp(20)
       assert(ps.verify())
     }
   }
   test("verify with") {
-    val sz = Sector.M(128)
+    val sz = Sector.M(16)
     Memory(sz) { s1 =>
       val rp = new RandomPatternVerifier(s1, Sector.K(4))
       rp.stamp(5)

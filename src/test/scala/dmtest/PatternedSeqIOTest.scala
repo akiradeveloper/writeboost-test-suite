@@ -5,7 +5,7 @@ import dmtest.stack._
 
 class PatternedSeqIOTest extends DMTestSuite {
   test("pattened IO") {
-    Memory(Sector.M(128)) { s =>
+    Memory(Sector.M(16)) { s =>
       import PatternedSeqIO._
       val pat = Seq(
         Write(Sector.K(1)),
