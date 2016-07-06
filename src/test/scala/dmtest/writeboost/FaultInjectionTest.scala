@@ -13,15 +13,18 @@ class FaultInjectionTest extends DMTestSuite {
         Writeboost.Table(slow, fast).create { s =>
           slow.reload(Flakey.Table(_slow, 1, 1)) // should use _slow
           fast.reload(Flakey.Table(_fast, 1, 1))
+          logger.info(s"s.table=${s.table}")
+          logger.info(s"slow.table=${slow.dm.table}")
+          logger.info(s"fast.table=${fast.dm.table}")
           // error detected from backing device
           logger.info("reading")
           intercept[Exception] {
             while (true) {
-              val st1 = s.status
+              // val st1 = s.status
               Shell(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null count=1")
-              val st2 = s.status
-              val key = Writeboost.StatKey(false, false, false, false) // read from backing
-              assert(st2.stat(key) > st1.stat(key))
+              // val st2 = s.status
+              // val key = Writeboost.StatKey(false, false, false, false) // read from backing
+              // assert(st2.stat(key) > st1.stat(key))
             }
           }
           // no room in rambuf so timeout
