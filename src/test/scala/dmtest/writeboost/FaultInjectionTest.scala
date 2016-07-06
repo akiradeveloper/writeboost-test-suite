@@ -17,7 +17,11 @@ class FaultInjectionTest extends DMTestSuite {
           logger.info("reading")
           intercept[Exception] {
             while (true) {
-              Shell(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null")
+              val st1 = s.status
+              Shell(s"dd status=none if=${s.bdev.path} iflag=direct of=/dev/null count=1")
+              val st2 = s.status
+              val key = Writeboost.StatKey(false, false, false, false) // read from backing
+              assert(st2.stat(key) > st1.stat(key))
             }
           }
           // no room in rambuf so timeout
