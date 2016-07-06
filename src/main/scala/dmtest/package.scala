@@ -4,10 +4,11 @@ import org.slf4j.LoggerFactory
 package object dmtest {
   val logger = Logger(LoggerFactory.getLogger("dmtest"))
 
-  def reportTime[A](label: String)(f: => A): Unit = {
+  def reportTime[A](label: String)(f: => A): A = {
     val s = System.currentTimeMillis()
-    f
+    val res = f
     val e = System.currentTimeMillis()
     logger.info(s"${label}: elapsed time=${e-s}[ms]")
+    res
   }
 }
