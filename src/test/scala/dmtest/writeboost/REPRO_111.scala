@@ -6,8 +6,8 @@ import dmtest.stack._
 
 class REPRO_111 extends DMTestSuite {
   test("luks on top of writeboost") {
-    slowDevice(Sector.G(12)) { backing =>
-      fastDevice(Sector.M(32)) { caching =>
+    slowDevice(Sector.M(256)) { backing =>
+      fastDevice(Sector.M(512)) { caching =>
         Writeboost.sweepCaches(caching)
         val options = Map(
           "writeback_threshold" -> 70,
@@ -18,7 +18,7 @@ class REPRO_111 extends DMTestSuite {
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
-              Shell.at(mp)(s"stress -v --timeout 30 --hdd 4 --hdd-bytes 512M")
+              // Shell.at(mp)(s"stress -v --timeout 30 --hdd 4 --hdd-bytes 512M")
             }
           }
         }
