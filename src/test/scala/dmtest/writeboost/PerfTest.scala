@@ -35,4 +35,24 @@ class PerfTest extends DMTestSuite {
       }
     }
   }
+  test("caching seq write (baseline for randwrite)") {
+    fastDevice(Sector.M(500)) { s =>
+      reportTime("") {
+        Shell(s"fio --name=test --filename=${s.bdev.path} --rw=write --ioengine=libaio --size=500m --bs=256k --iodepth=32")
+      }
+    }
+  }
+  test("rand write") {
+    val amount = 500 <> 1
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(amount + 100)) { caching =>
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          reportTime("") {
+            Shell(s"fio --name=test --filename=${s.bdev.path} --rw=randwrite --ioengine=lib--direct=1 --size=${amount}m --ba=4k --bs=4k --iodepth=32")
+          }
+        }
+      }
+    }
+  }
 }
