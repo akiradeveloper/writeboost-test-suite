@@ -55,4 +55,26 @@ class PerfTest extends DMTestSuite {
       }
     }
   }
+  test("writeback sorting effect") {
+    val amount = 128 <> 1
+    slowDevice(Sector.G(2)) { backing =>
+      fastDevice(Sector.M(129)) { caching =>
+        Seq(4, 32, 128, 256).foreach { batchSize =>
+          Writeboost.sweepCaches(caching)
+          Writeboost.Table(backing, caching, Map("nr_max_batched_writeback" -> batchSize)).create { s =>
+            XFS.format(s)
+            XFS.Mount(s) { mp =>
+              reportTime(s"batch size = ${batchSize}") {
+                Shell.at(mp)(s"fio --name=test --rw=randwrite --ioengine=libaio --direct=1 --size=${amount}m --ba=4k --bs=4k --iodepth=32")
+              }
+              Shell("sync")
+              Kernel.dropCaches
+              s.dropTransient()
+              s.dropCaches()
+            }
+          }
+        }
+      }
+    }
+  }
 }
