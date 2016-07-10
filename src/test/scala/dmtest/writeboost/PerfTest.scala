@@ -66,11 +66,25 @@ class PerfTest extends DMTestSuite {
             XFS.Mount(s) { mp =>
               reportTime(s"batch size = ${batchSize}") {
                 Shell.at(mp)(s"fio --name=test --rw=randwrite --ioengine=libaio --direct=1 --size=${amount}m --ba=4k --bs=4k --iodepth=32")
+                Shell("sync")
+                Kernel.dropCaches
+                s.dropTransient()
+                s.dropCaches()
               }
-              Shell("sync")
-              Kernel.dropCaches
-              s.dropTransient()
-              s.dropCaches()
+            }
+          }
+        }
+      }
+    }
+  }
+  test("wipe") {
+    slowDevice(Sector.M(1024)) { backing =>
+      fastDevice(Sector.M(1800)) { caching =>
+        Seq(Sector(1), Sector.K(4), Sector.M(1)).foreach { bs =>
+          Writeboost.sweepCaches(caching)
+          Writeboost.Table(backing, caching, Map("writeback_threshold" -> 70)).create { s =>
+            reportTime(s"bs=${bs.toB}") {
+              Shell(s"dd if=/dev/zero of=${s.bdev.path} oflag=direct bs=${bs.toB} count=${s.bdev.size.toB / bs.toB}")
             }
           }
         }
