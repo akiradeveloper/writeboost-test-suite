@@ -10,12 +10,12 @@ class REPRO_115 extends DMTestSuite {
       Memory(Sector.M(128)) { backing1 =>
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing1, caching).create { s =>
-          Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=1M") // write
+          Shell(s"dd if=/dev/urandom of=${s.bdev.path} bs=1M count=128") // write
         }
       }
       Memory(Sector.M(64)) { backing2 =>
         Writeboost.Table(backing2, caching).create { s =>
-          Shell(s"dd if=${s.bdev.path} of=/dev/null") // read
+          Shell(s"dd if=${s.bdev.path} of=/dev/null bs=1M count=128") // read
         }
       }
     }
