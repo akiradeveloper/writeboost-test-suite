@@ -30,7 +30,8 @@ class ScenarioTest extends DMTestSuite {
       }
     }
   }
-  test("stress") {
+  // FIXME will test
+  ignore("stress") {
     slowDevice(Sector.G(2)) { backing =>
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
@@ -43,14 +44,15 @@ class ScenarioTest extends DMTestSuite {
       }
     }
   }
-  test("dbench") {
+  // FIXME will test
+  ignore("dbench") {
     slowDevice(Sector.G(2)) { backing =>
       fastDevice(Sector.M(64)) { caching =>
         Writeboost.sweepCaches(caching)
         val table = Writeboost.Table(backing, caching,
           Map("writeback_threshold" -> 70, "read_cache_threshold" -> 31)
         )
-        def run(option: String): Unit = {
+        def run(option: String): Unit = reportTime(option) {
           table.create { s =>
             XFS.format(s)
             XFS.Mount(s) { mp =>
