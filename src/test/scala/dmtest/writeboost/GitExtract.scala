@@ -21,7 +21,7 @@ object GitExtract {
 case class GitExtract(mp: Path) {
   import GitExtract._
   val orig = GitTree(Paths.get("./linux-root"))
-  val root = orig.mkClone(mp.resolve("./linux"))
+  val root = orig.mkClone(mp.resolve("linux"))
   def extract(tag: String): Unit = {
     root.checkout(tag)
   }

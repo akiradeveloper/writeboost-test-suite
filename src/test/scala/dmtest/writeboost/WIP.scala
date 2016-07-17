@@ -8,7 +8,7 @@ import scala.util.Random
 class WIP extends DMTestSuite {
   // perf
   test("git extract") {
-    slowDevice(Sector.G(2)) { backing =>
+    slowDevice(Sector.G(8)) { backing =>
       fastDevice(Sector.M(1024)) { caching =>
         Writeboost.sweepCaches(caching)
         val table = Writeboost.Table(backing, caching, Map("writeback_threshold" -> 70))
