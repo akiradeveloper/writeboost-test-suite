@@ -6,6 +6,7 @@ import dmtest.fs._
 import scala.util.Random
 
 class WIP extends DMTestSuite {
+  // perf
   test("git extract") {
     slowDevice(Sector.G(2)) { backing =>
       fastDevice(Sector.M(1024)) { caching =>
