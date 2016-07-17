@@ -20,11 +20,12 @@ class WIP extends DMTestSuite {
               Shell.at(mp)(s"dbench ${option}")
               Shell("sync")
               Kernel.dropCaches
+              s.dropTransient()
               s.dropCaches()
             }
           }
         }
-        val t = 300 <> 1
+        val t = 60 <> 1
         run(s"-t ${t} 1")
         run(s"-S -t ${t} 4") // directory operations are sync
         run(s"-s -t ${t} 4") // all operations are sync
