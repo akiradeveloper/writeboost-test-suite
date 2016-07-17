@@ -5,7 +5,7 @@ import dmtest.stack._
 import dmtest.fs._
 
 class REPRO_115 extends DMTestSuite {
-  test("making another device while in use") {
+  ignore("making another device while in use") {
     Memory(Sector.M(8)) { caching =>
       Memory(Sector.M(64)) { backing1 =>
         Memory(Sector.M(64)) { backing2 =>

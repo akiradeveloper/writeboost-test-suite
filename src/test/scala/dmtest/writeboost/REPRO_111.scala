@@ -6,7 +6,7 @@ import dmtest.stack._
 
 class REPRO_111 extends DMTestSuite {
   // not reproduced yet
-  test("luks on top of writeboost") {
+  ignore("luks on top of writeboost") {
     slowDevice(Sector.M(256)) { backing =>
       fastDevice(Sector.M(512)) { caching =>
         Writeboost.sweepCaches(caching)
