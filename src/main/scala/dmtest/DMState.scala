@@ -20,8 +20,14 @@ class DMState(val name: String) {
       Files.deleteIfExists(f)
     }
   }
-  def suspend() = Shell(s"dmsetup suspend ${name}")
-  def resume() = Shell(s"dmsetup resume ${name}")
+  def suspend() = {
+    logger.debug("suspend")
+    Shell(s"dmsetup suspend ${name}")
+  }
+  def resume() = {
+    logger.debug("resume")
+    Shell(s"dmsetup resume ${name}")
+  }
   def table: Table = {
     val line = Shell(s"dmsetup table ${name}").split(" ")
     Table(Sector(line(0).toLong), Sector(line(1).toLong), line(2), line.drop(3))
