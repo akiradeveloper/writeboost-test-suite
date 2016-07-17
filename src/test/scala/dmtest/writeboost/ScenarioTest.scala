@@ -30,8 +30,7 @@ class ScenarioTest extends DMTestSuite {
       }
     }
   }
-  // FIXME will test
-  ignore("stress") {
+  test("stress") {
     slowDevice(Sector.G(2)) { backing =>
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
@@ -44,8 +43,7 @@ class ScenarioTest extends DMTestSuite {
       }
     }
   }
-  // FIXME will test
-  ignore("dbench") {
+  test("dbench") {
     slowDevice(Sector.G(2)) { backing =>
       fastDevice(Sector.M(64)) { caching =>
         Writeboost.sweepCaches(caching)
