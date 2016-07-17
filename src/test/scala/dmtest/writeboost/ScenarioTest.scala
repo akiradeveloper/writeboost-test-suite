@@ -12,8 +12,8 @@ class ScenarioTest extends DMTestSuite {
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          XFS.format(s)
-          XFS.Mount(s) { mp =>
+          EXT4.format(s)
+          EXT4.Mount(s) { mp =>
             val rc = new CompileRuby(mp)
             rc.downloadArchive
             rc.unarchive
@@ -21,7 +21,7 @@ class ScenarioTest extends DMTestSuite {
         }
         Writeboost.Table(backing, caching, Map("writeback_threshold" -> 70, "read_cache_threshold" -> 31)).create { s =>
           s.dropCaches()
-          XFS.Mount(s) { mp =>
+          EXT4.Mount(s) { mp =>
             val rc = new CompileRuby(mp)
             rc.compile
             rc.check
@@ -35,8 +35,8 @@ class ScenarioTest extends DMTestSuite {
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
-          XFS.format(s)
-          XFS.Mount(s) { mp =>
+          EXT4.format(s)
+          EXT4.Mount(s) { mp =>
             Shell.at(mp) { s"stress -v --timeout ${60 <> 1} --hdd 4 --hdd-bytes 512M"}
           }
         }

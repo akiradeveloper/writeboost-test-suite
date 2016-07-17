@@ -15,8 +15,8 @@ class WIP extends DMTestSuite {
         )
         def run(option: String): Unit = reportTime(option) {
           table.create { s =>
-            XFS.format(s)
-            XFS.Mount(s) { mp =>
+            EXT4.format(s)
+            EXT4.Mount(s) { mp =>
               Shell.at(mp)(s"dbench ${option}")
               Shell("sync")
               Kernel.dropCaches
@@ -25,7 +25,7 @@ class WIP extends DMTestSuite {
           }
         }
         val t = 300 <> 1
-        run(s"-t ${t} 4")
+        run(s"-t ${t} 1")
         run(s"-S -t ${t} 4") // directory operations are sync
         run(s"-s -t ${t} 4") // all operations are sync
       }
