@@ -31,7 +31,7 @@ class ScenarioTest extends DMTestSuite {
     }
   }
   test("stress") {
-    slowDevice(Sector.G(2)) { backing =>
+    slowDevice(Sector.G(4)) { backing =>
       fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
