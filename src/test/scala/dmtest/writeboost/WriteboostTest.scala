@@ -8,7 +8,7 @@ class WriteboostTest extends Suites(
   new LogicTest,
   new DataCompositionTest,
   new ReadCachingTest,
-  // new FaultInjectionTest,
+  new FaultInjectionTest,
   new ScenarioTest,
   new REPRO_111,
   new REPRO_115

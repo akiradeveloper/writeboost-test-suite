@@ -7,11 +7,9 @@ import dmtest.Shell
 class CompileRuby(dir: Path) {
   val RUBY = dir.resolve(s"ruby.tar.gz")
   val RUBY_CACHED = Paths.get("ruby-2.1.1.tar.gz")
-  val RUBY_LOCATION = Paths.get("http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.1.tar.gz")
-
   def downloadArchive: Unit = {
     if (!Files.exists(RUBY_CACHED)) {
-      Shell(s"curl ${RUBY_LOCATION} -o ${RUBY_CACHED}")
+      Shell(s"curl http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.1.tar.gz -o ${RUBY_CACHED}")
     }
     Files.copy(RUBY_CACHED, RUBY)
   }
