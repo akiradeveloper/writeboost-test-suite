@@ -41,24 +41,4 @@ class LogicTest extends DMTestSuite {
       }
     }
   }
-  test("no read caching") {
-    slowDevice(Sector.G(1)) { backing =>
-      fastDevice(Sector.M(32)) { caching =>
-        Writeboost.sweepCaches(caching)
-        Writeboost.Table(backing, caching).create { s =>
-          import PatternedSeqIO._
-          val pat = Seq(Read(Sector.K(4)), Skip(Sector.K(4)))
-          val pio = new PatternedSeqIO(pat)
-          pio.maxIOAmount = Sector.M(16)
-          // def run() = Shell(s"fio --name=test filename=${s.bdev.path} --io_limit=16M --rw=read:4K --bs=4K --direct=1")
-          pio.run(s)
-          val st1 = Writeboost.Status.parse(s.dm.status())
-          pio.run(s)
-          val st2 = Writeboost.Status.parse(s.dm.status())
-          val key = Writeboost.StatKey(false, true, false, true)
-          assert(st2.stat(key) === st1.stat(key))
-        }
-      }
-    }
-  }
 }
