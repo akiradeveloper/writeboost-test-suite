@@ -11,5 +11,7 @@ class WriteboostTest extends Suites(
   new ScenarioTest,
   new FaultInjectionTest,
   new REPRO_111,
-  new REPRO_115
+  new REPRO_115,
+  new REPRO_116,
+  new REPRO_118
 )
