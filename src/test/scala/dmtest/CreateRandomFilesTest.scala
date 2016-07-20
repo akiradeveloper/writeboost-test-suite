@@ -11,7 +11,7 @@ class CreateRandomFilesTest extends DMTestSuite {
         val crf = new CreateRandomFiles(mp)
         crf.numDirectories = 10
         crf.numFiles = 30
-        crf.numSize = 5
+        crf.fileSize = 5
         crf.create()
       }
     }
