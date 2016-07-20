@@ -55,7 +55,7 @@ class REPRO_111 extends DMTestSuite {
         EXT4.Mount(luks) { mp =>
           val crf = new CreateRandomFiles(mp)
           crf.numDirectories = 100
-          crf.numFiles = 1000
+          crf.numFiles = 100
           crf.numSize = 1
           crf.create()
         }
