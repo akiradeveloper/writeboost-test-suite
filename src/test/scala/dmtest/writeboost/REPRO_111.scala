@@ -7,13 +7,11 @@ import dmtest.stack._
 class REPRO_111 extends DMTestSuite {
   // not reproduced yet
   test("luks on top of writeboost") {
-    slowDevice(Sector.M(256)) { backing =>
-      fastDevice(Sector.M(512)) { caching =>
+    slowDevice(Sector.G(10)) { backing =>
+      fastDevice(Sector.G(1)) { caching =>
         Writeboost.sweepCaches(caching)
         val options = Map(
-          "writeback_threshold" -> 70,
-          "sync_data_interval" -> 3600,
-          "read_cache_threshold" -> 2
+          "read_cache_threshold" -> 1
         )
         Writeboost.Table(backing, caching, options).create { wb =>
           Luks(wb) { s =>
@@ -24,6 +22,24 @@ class REPRO_111 extends DMTestSuite {
 //            }
 //            EXT4.Mount(s) { mp =>
 //            }
+          }
+        }
+      }
+    }
+  }
+  test("pattern verifier") {
+    slowDevice(Sector.M(128)) { backing =>
+      fastDevice(Sector.M(16)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val options = Map(
+          "read_cache_threshold" -> 1
+        )
+        Writeboost.Table(backing, caching, options).create  { wb =>
+          Luks(wb) { s =>
+            val ps = new RandomPatternVerifier(s, Sector.K(4))
+            ps.stamp(5)
+            assert(ps.verify())
+            assert(ps.verify())
           }
         }
       }
