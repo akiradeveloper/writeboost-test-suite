@@ -19,7 +19,8 @@ class REPRO_111 extends DMTestSuite {
           Luks(wb) { s =>
             EXT4.format(s)
             EXT4.Mount(s) { mp =>
-              // Shell.at(mp)(s"stress -v --timeout 30 --hdd 4 --hdd-bytes 512M")
+            }
+            EXT4.Mount(s) { mp =>
             }
           }
         }
