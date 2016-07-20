@@ -53,7 +53,11 @@ class REPRO_111 extends DMTestSuite {
       Luks(backing) { luks => // open
         EXT4.format(luks)
         EXT4.Mount(luks) { mp =>
-          // TODO make dirs and files
+          val crf = new CreateRandomFiles(mp)
+          crf.numDirectories = 100
+          crf.numFiles = 1000
+          crf.numSize = 1
+          crf.create()
         }
         Shell(s"fsck.ext4 -fn ${luks.bdev.path}")
       } // close
