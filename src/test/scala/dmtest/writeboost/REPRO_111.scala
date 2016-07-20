@@ -50,7 +50,6 @@ class REPRO_111 extends DMTestSuite {
       Luks(backing) { luks =>
         EXT4.format(luks)
         EXT4.Mount(luks) { mp =>
-          Shell(s"if=/dev/urandom of=${mp.resolve("f")} bs=1m count=80")
         }
         fastDevice(Sector.M(16)) { caching =>
           Writeboost.sweepCaches(caching)
