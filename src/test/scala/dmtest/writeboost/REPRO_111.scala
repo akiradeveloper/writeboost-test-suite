@@ -57,7 +57,7 @@ class REPRO_111 extends DMTestSuite {
           val options = Map(
             "read_cache_threshold" -> 0
           )
-          Writeboost.Table(backing, caching, options).create { s =>
+          Writeboost.Table(luks, caching, options).create { s =>
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
           }
