@@ -5,6 +5,17 @@ import dmtest.fs.EXT4
 import dmtest.stack._
 
 class REPRO_111 extends DMTestSuite {
+  test("luks: format before wrapping") {
+    slowDevice(Sector.M(128)) { backing =>
+      EXT4.format(backing)
+      Luks(backing) { s =>
+        intercept[Exception] {
+          EXT4.Mount(s) { mp => }
+        }
+      }
+    }
+  }
+
   // not reproduced yet
   test("luks on top of writeboost") {
     slowDevice(Sector.M(256)) { backing =>
