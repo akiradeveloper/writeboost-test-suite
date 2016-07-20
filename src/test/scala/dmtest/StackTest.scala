@@ -12,27 +12,6 @@ class StackTest extends DMTestSuite {
       assert(s.exists)
     }
   }
-  test("luks") {
-    Memory(Sector.M(16)) { s =>
-      stack.Luks(s) { s2 =>
-        Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
-        assert(s2.exists)
-      }
-      assert(s.exists)
-    }
-  }
-  test("flakey") {
-    Memory(Sector.M(16)) { backing =>
-      // uptime=3sec, downtime=1sec
-      Flakey.Table(backing, 3, 1).create { s =>
-        intercept[Exception] {
-          while (true) {
-            Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1")
-          }
-        }
-      }
-    }
-  }
   test("memory") {
     Memory(Sector.M(1)) { s =>
       assert(s.exists)
@@ -48,12 +27,6 @@ class StackTest extends DMTestSuite {
       assert(s1.exists)
     }
   }
-// FIXME (fails to umount at around 500th)
-//  test("stack (not leaking)") {
-//    (0 until 100000).foreach { _ => // 100GB in total
-//      Memory(Sector.M(1)) { _ => }
-//    }
-//  }
   test("suite pool allocate") {
     slowDevice(Sector.M(16 <> 4)) { s1 =>
       fastDevice(Sector.M(2 <> 1)) { s2 =>
