@@ -14,6 +14,7 @@ class REPRO_111 extends DMTestSuite {
           "read_cache_threshold" -> 1
         )
         Writeboost.Table(backing, caching, options).create { wb =>
+          Luks.format(wb)
           Luks(wb) { s =>
             EXT4.format(s)
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
@@ -35,6 +36,7 @@ class REPRO_111 extends DMTestSuite {
           "read_cache_threshold" -> 1
         )
         Writeboost.Table(backing, caching, options).create  { wb =>
+          Luks.format(wb)
           Luks(wb) { s =>
             val ps = new RandomPatternVerifier(s, Sector.K(4))
             ps.stamp(5)
@@ -47,20 +49,24 @@ class REPRO_111 extends DMTestSuite {
   }
   test("encrypted backing") {
     slowDevice(Sector.M(128)) { backing =>
-      Luks(backing) { luks =>
+      Luks.format(backing)
+      Luks(backing) { luks => // open
         EXT4.format(luks)
         EXT4.Mount(luks) { mp =>
+          // TODO make dirs and files
         }
         Shell(s"fsck.ext4 -fn ${luks.bdev.path}")
-        fastDevice(Sector.M(16)) { caching =>
-          Writeboost.sweepCaches(caching)
-          val options = Map(
-            "read_cache_threshold" -> 0
-          )
-          Writeboost.Table(luks, caching, options).create { s =>
+      } // close
+      fastDevice(Sector.M(16)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val options = Map(
+          "read_cache_threshold" -> 1
+        )
+        Writeboost.Table(backing, caching, options).create { wb =>
+          Luks(wb) { s => // open
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
-          }
+          } // close
         }
       }
     }

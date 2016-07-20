@@ -1,12 +1,13 @@
 package dmtest
 
-import dmtest.fs.EXT4
-import dmtest.stack.{Luks, Memory}
+import dmtest.fs._
+import dmtest.stack._
 
 class LuksTest extends DMTestSuite {
   test("write then read") {
     Memory(Sector.M(16)) { s =>
-      stack.Luks(s) { s2 =>
+      Luks.format(s)
+      Luks(s) { s2 =>
         Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} bs=512 count=10") // wipe
         assert(s2.exists)
       }
@@ -16,6 +17,7 @@ class LuksTest extends DMTestSuite {
   test("format before wrapping") {
     slowDevice(Sector.M(128)) { backing =>
       EXT4.format(backing)
+      Luks.format(backing)
       Luks(backing) { s =>
         intercept[Exception] {
           EXT4.Mount(s) { mp => }
