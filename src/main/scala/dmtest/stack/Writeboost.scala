@@ -99,6 +99,6 @@ case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStac
   // drop all dirty blocks from the caching device to the backing device
   // (ram buffer isn't concerned)
   def dropCaches(): Unit = dm.message("drop_caches")
-  def clearStats(): Unit = dm.message("clear_stats")
+  def clearStats(): Unit = dm.message("clear_stat")
   def status: Writeboost.Status = Writeboost.Status.parse(dm.status())
 }
