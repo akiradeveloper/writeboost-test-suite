@@ -51,10 +51,11 @@ class REPRO_111 extends DMTestSuite {
         EXT4.format(luks)
         EXT4.Mount(luks) { mp =>
         }
+        Shell(s"fsck.ext4 -fn ${luks.bdev.path}")
         fastDevice(Sector.M(16)) { caching =>
           Writeboost.sweepCaches(caching)
           val options = Map(
-            "read_cache_threshold" -> 1
+            "read_cache_threshold" -> 0
           )
           Writeboost.Table(backing, caching, options).create { s =>
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
