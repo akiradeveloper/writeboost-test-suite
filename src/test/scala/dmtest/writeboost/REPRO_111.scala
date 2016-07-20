@@ -6,7 +6,7 @@ import dmtest.stack._
 
 class REPRO_111 extends DMTestSuite {
   // not reproduced yet
-  ignore("luks on top of writeboost") {
+  test("luks on top of writeboost") {
     slowDevice(Sector.M(256)) { backing =>
       fastDevice(Sector.M(512)) { caching =>
         Writeboost.sweepCaches(caching)
@@ -18,10 +18,12 @@ class REPRO_111 extends DMTestSuite {
         Writeboost.Table(backing, caching, options).create { wb =>
           Luks(wb) { s =>
             EXT4.format(s)
-            EXT4.Mount(s) { mp =>
-            }
-            EXT4.Mount(s) { mp =>
-            }
+            Shell(s"fsck.ext4 -fn ${s.bdev.path}")
+            Shell(s"fsck.ext4 -fn ${s.bdev.path}")
+//            EXT4.Mount(s) { mp =>
+//            }
+//            EXT4.Mount(s) { mp =>
+//            }
           }
         }
       }
