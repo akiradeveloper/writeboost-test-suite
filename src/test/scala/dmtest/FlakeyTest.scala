@@ -16,7 +16,7 @@ class FlakeyTest extends DMTestSuite {
     }
   }
   // FIXME dm-flakey bug
-  ignore("read error") {
+  test("read error") {
     Memory(Sector.M(16)) { a =>
       Flakey.Table(a, 0, 1).create { b =>
         intercept[Exception] {
