@@ -38,11 +38,13 @@ class ReadCachingTest extends DMTestSuite {
         val pat = Seq(Read(Sector.K(4)), Skip(Sector.K(4)))
         val pio = new PatternedSeqIO(pat)
         pio.maxIOAmount = Sector.M(16)
+        logger.debug("staging data")
         val st1 = table.create { s =>
           // run(s)
           pio.run(s)
           Writeboost.Status.parse(s.dm.status())
         }
+        logger.debug("and then cache hit")
         val st2 = table.create { s =>
           // run(s)
           pio.run(s)
