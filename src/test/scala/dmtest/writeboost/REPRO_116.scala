@@ -17,7 +17,7 @@ class REPRO_116 extends DMTestSuite {
           intercept[Exception] {
             s.bdev.read(Sector(0), Sector(3))
           }
-          fast.reload(Flakey.Table(_fast, 0, 0))
+          fast.reload(Linear.Table(_fast))
         }
       }}
     }}
@@ -35,7 +35,7 @@ class REPRO_116 extends DMTestSuite {
           intercept[Exception] {
             s.bdev.read(Sector(0), Sector(3))
           }
-          slow.reload(Flakey.Table(_slow, 0, 0))
+          slow.reload(Linear.Table(_slow))
         }
       }}
     }}
