@@ -28,7 +28,7 @@ class FaultInjectionTest extends DMTestSuite {
           // no room in rambuf so timeout
           // man timeout:
           // if the command times out, then exit with status 124
-          Shell(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000")
+          Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000")
         } // can be removed (not blocked up)
       }}
     }}
