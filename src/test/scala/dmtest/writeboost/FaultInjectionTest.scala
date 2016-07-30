@@ -23,6 +23,9 @@ class FaultInjectionTest extends DMTestSuite {
           val st2 = s.status
           val key = Writeboost.StatKey(false, false, false, false) // partial read from backing
           assert(st2.stat(key) > st1.stat(key))
+
+          slow.reload(Flakey.Table(_slow, 0, 0))
+          fast.reload(Flakey.Table(_fast, 0, 0))
         } // can be removed (not blocked up)
       }}
     }}
@@ -40,6 +43,7 @@ class FaultInjectionTest extends DMTestSuite {
           intercept[Exception] {
             s.bdev.write(Sector(1), DataBuffer.random(Sector(2).toB.toInt))
           }
+          fast.reload(Flakey.Table(_fast, 0, 0))
         }
       }}
     }}
