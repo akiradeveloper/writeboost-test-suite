@@ -27,7 +27,7 @@ class FaultInjectionTest extends DMTestSuite {
           // no room in rambuf so timeout
           // man timeout:
           // if the command times out, then exit with status 124
-          assert(Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000").isLeft)
+          // assert(Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000").isLeft)
 
           slow.reload(Linear.Table(_slow))
           fast.reload(Linear.Table(_fast))
