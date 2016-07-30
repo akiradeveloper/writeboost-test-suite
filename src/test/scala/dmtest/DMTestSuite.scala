@@ -49,11 +49,11 @@ trait DMTestSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAl
   private var _numTable: Int = 0
 
   def numMount: Int = {
-    Shell("mount").split("\n").size
+    Shell("mount", quiet=true).split("\n").size
   }
 
   def numTable: Int = {
-    Shell("dmsetup table").split("\n").size
+    Shell("dmsetup table", quiet=true).split("\n").size
   }
 
   override def beforeEach = {

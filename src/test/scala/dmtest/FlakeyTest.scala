@@ -9,7 +9,7 @@ class FlakeyTest extends DMTestSuite {
       Flakey.Table(backing, 3, 1).create { s =>
         intercept[Exception] {
           while (true) {
-            Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1")
+            Shell(s"dd status=none if=/dev/urandom of=${s.bdev.path} oflag=direct bs=512 count=1", quiet=true)
           }
         }
       }
