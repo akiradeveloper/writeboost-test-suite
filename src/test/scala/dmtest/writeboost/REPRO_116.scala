@@ -4,8 +4,7 @@ import dmtest._
 import dmtest.stack._
 
 class REPRO_116 extends DMTestSuite {
-  // TODO enable this once dm-flakey is fixed
-  ignore("read should be failed when merging is needed and reading from caching device failed") {
+  test("read should be failed when merging is needed and reading from caching device failed") {
     slowDevice(Sector.M(128)) { _slow => Linear.Table(_slow).create { slow =>
       fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
         Writeboost.sweepCaches(fast)
@@ -22,8 +21,7 @@ class REPRO_116 extends DMTestSuite {
       }}
     }}
   }
-
-  ignore("read should be failed when merging is needed and reading from backing device failed") {
+  test("read should be failed when merging is needed and reading from backing device failed") {
     slowDevice(Sector.M(128)) { _slow => Linear.Table(_slow).create { slow =>
       fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
         Writeboost.sweepCaches(fast)

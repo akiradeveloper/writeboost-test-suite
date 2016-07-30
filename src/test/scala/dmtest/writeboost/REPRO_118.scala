@@ -5,6 +5,7 @@ import dmtest.stack._
 
 class REPRO_118 extends DMTestSuite {
   // TODO enable this once dm-flakey is fixed
+  // this should not be enabled before #118 is resolved.
   ignore("don't merge when the asking region entirely exists in the caching device") {
     slowDevice(Sector.M(128)) { _slow => Linear.Table(_slow).create { slow =>
       fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
