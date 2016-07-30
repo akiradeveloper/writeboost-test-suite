@@ -24,6 +24,11 @@ class FaultInjectionTest extends DMTestSuite {
           val key = Writeboost.StatKey(false, false, false, false) // partial read from backing
           assert(st2.stat(key) > st1.stat(key))
 
+          // no room in rambuf so timeout
+          // man timeout:
+          // if the command times out, then exit with status 124
+          assert(Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000").isLeft)
+
           slow.reload(Linear.Table(_slow))
           fast.reload(Linear.Table(_fast))
         } // can be removed (not blocked up)
