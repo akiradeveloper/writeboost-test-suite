@@ -101,4 +101,49 @@ class ReadCachingTest extends DMTestSuite {
       }
     }
   }
+  test("doesn't cache because of the threshold") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 1))
+
+        import PatternedSeqIO._
+        val pat = Seq(Read(Sector.K(8)), Skip(Sector.K(4)))
+        val pio = new PatternedSeqIO(pat)
+        pio.maxIOAmount = Sector.M(16)
+        table.create { s =>
+          pio.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        val st = table.create { s =>
+          pio.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        assert(st.stat(Writeboost.StatKey(false, true, false, true)) === 0)
+      }
+    }
+  }
+  test("doesn't cache because the read isn't fullsized") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127))
+
+        import PatternedSeqIO._
+        val pat = Seq(Read(Sector.K(3)), Skip(Sector.K(5)))
+        val pio = new PatternedSeqIO(pat)
+        pio.maxIOAmount = Sector.M(16)
+        table.create { s =>
+          pio.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        val st = table.create { s =>
+          pio.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        assert(st.stat(Writeboost.StatKey(false, true, false, true)) === 0) // full read hit
+        assert(st.stat(Writeboost.StatKey(false, true, false, false)) === 0) // partial read hit
+      }
+    }
+  }
 }
