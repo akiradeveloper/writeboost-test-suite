@@ -13,7 +13,7 @@ object Writeboost {
         "update_sb_record_interval",
         "sync_data_interval",
         "read_cache_threshold",
-        "write_through_mode" // this is static
+        "write_around_mode" // this is static
       )
       if (!allowed.contains(x)) {
         logger.error(s"tunable key ${x} isn't defined")
