@@ -76,8 +76,46 @@ class WriteAroundCachingTest extends DMTestSuite {
           Writeboost.Status.parse(s.dm.status())
         }
 
-        val key = Writeboost.StatKey(false, true, false, true)
-        assert(st.stat(key) === 0)
+        assert(st.stat(Writeboost.StatKey(false, true, false, true)) === 0)
+      }
+    }
+  }
+  test("write invalidates the read caches") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+
+        val table = Writeboost.Table(backing, caching, Map("write_around_mode" -> 1, "read_cache_threshold" -> 1))
+
+        import PatternedSeqIO._
+        val pat1 = Seq(Write(Sector.K(3)), Skip(Sector.K(5)))
+        val pio1 = new PatternedSeqIO(pat1)
+
+        val pat2 = Seq(Read(Sector.K(4)), Skip(Sector.K(4)))
+        val pio2 = new PatternedSeqIO(pat2)
+
+        // staging
+        pio2.maxIOAmount = Sector.M(16)
+        table.create { s =>
+          pio2.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+
+        // invalidating (by partial writes)
+        pio1.maxIOAmount = Sector.M(16)
+        val st1 = table.create { s =>
+          pio1.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        assert(st1.stat(Writeboost.StatKey(true, true, false, false)) > 0)
+
+        // won't hit
+        pio2.maxIOAmount = Sector.M(16)
+        val st2 = table.create { s =>
+          pio2.run(s)
+          Writeboost.Status.parse(s.dm.status())
+        }
+        assert(st2.stat(Writeboost.StatKey(false, true, false, true)) === 0)
       }
     }
   }
