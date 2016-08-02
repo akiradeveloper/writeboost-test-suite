@@ -78,7 +78,6 @@ class WriteAroundCachingTest extends DMTestSuite {
     }
   }
   test("write invalidates the read caches") {
-
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)

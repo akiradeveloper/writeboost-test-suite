@@ -6,5 +6,4 @@ import dmtest.fs._
 import scala.util.Random
 
 class WIP extends DMTestSuite {
-
 }
