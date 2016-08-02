@@ -28,4 +28,17 @@ class StackTest extends DMTestSuite {
       }
     }
   }
+  test("tunable is changed through message") {
+    slowDevice(Sector.M(16)) { backing =>
+      fastDevice(Sector.M(4)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val key = "nr_max_batched_writeback"
+        Writeboost.Table(backing, caching, Map(key -> 4)).create { s =>
+          assert(s.status.tunables(key) === 4)
+          s.dm.message(s"${key} 32")
+          assert(s.status.tunables(key) === 32)
+        }
+      }
+    }
+  }
 }
