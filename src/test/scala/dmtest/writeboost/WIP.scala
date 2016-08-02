@@ -21,27 +21,25 @@ class WIP extends DMTestSuite {
         val pio2 = new PatternedSeqIO(pat2)
 
         // staging
-        pio2.maxIOAmount = Sector.M(32)
         table.create { s =>
+          pio2.maxIOAmount = Sector.M(32)
           pio2.run(s)
           Writeboost.Status.parse(s.dm.status())
         }
 
-        // invalidating (by partial writes)
-        pio1.maxIOAmount = Sector.M(32)
-        val st1 = table.create { s =>
+        table.create { s =>
+          // invalidating (by partial writes)
+          pio1.maxIOAmount = Sector.M(32)
           pio1.run(s)
-          Writeboost.Status.parse(s.dm.status())
-        }
-        assert(st1.stat(Writeboost.StatKey(true, true, false, false)) > 0)
+          val st1 = Writeboost.Status.parse(s.dm.status())
+          assert(st1.stat(Writeboost.StatKey(true, true, false, false)) > 0)
 
-        // won't hit
-        pio2.maxIOAmount = Sector.M(32)
-        val st2 = table.create { s =>
+          // won't hit
+          pio2.maxIOAmount = Sector.M(32)
           pio2.run(s)
-          Writeboost.Status.parse(s.dm.status())
+          val st2 = Writeboost.Status.parse(s.dm.status())
+          assert(st2.stat(Writeboost.StatKey(false, true, false, true)) === 0)
         }
-        assert(st2.stat(Writeboost.StatKey(false, true, false, true)) === 0)
       }
     }
   }
