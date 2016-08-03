@@ -23,8 +23,13 @@ class WIP extends DMTestSuite {
 
           reader.run(s) // stage all read date into the cells
 
-          writer.run(s) // cancel all cells
+          writer.run(s) // cancel all cells (try remove this line)
 
+          reader.startingOffset = maxIOAmount
+          reader.run(s)
+          Thread.sleep(5000) // wait for injection
+
+          reader.startingOffset = Sector(0)
           reader.run(s) // no read hits
 
           val st = s.status.stat
