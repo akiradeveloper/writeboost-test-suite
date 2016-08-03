@@ -24,7 +24,9 @@ class WIP extends DMTestSuite {
           reader.run(s) // no read hits
 
           val st = s.status.stat
-          assert(st(Writeboost.StatKey(false, true, false, true)) === 2048)
+          val onCache = Writeboost.StatKey(false, true, false, true)
+          val onBuffer = Writeboost.StatKey(false, true, true, true)
+          assert(st(onBuffer) + st(onCache) === 2048)
         }
       }
     }
