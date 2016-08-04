@@ -18,7 +18,7 @@ class PureTest extends DMTestSuite {
     var args: Array[String] = (1 to 24).toArray.map(_.toString)
     args ++= Array("10",
       "writeback_threshold", "25",
-      "nr_max_batched_writeback", "26",
+      "nr_cur_batched_writeback", "26",
       "update_sb_record_interval", "27",
       "sync_data_interval", "28",
       "read_cache_threshold", "29")
