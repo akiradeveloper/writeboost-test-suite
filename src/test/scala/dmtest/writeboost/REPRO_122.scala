@@ -14,23 +14,23 @@ class REPRO_122 extends DMTestSuite {
         val pat = Seq(Read(Sector.K(4)), Skip(Sector.K(4)))
         val pio = new PatternedSeqIO(pat)
 
-        pio.maxIOAmount = Sector.K(4) * 31 * 2
-        val st1 = Writeboost.Table(backing, caching, m).create { s =>
+        Writeboost.Table(backing, caching, m).create { s =>
+          pio.maxIOAmount = Sector.K(4) * 31 * 2
           pio.run(s)
           Thread.sleep(5000)
           pio.run(s)
-          s.status
+          val st = s.status.stat
+          assert(st(Writeboost.StatKey(false, true, false, true)) === 0)
         }
-        assert(st1.stat(Writeboost.StatKey(false, true, false, true)) === 0)
 
-        pio.maxIOAmount = Sector.K(4) * 33 * 2
-        val st2 = Writeboost.Table(backing, caching, m).create { s =>
+        Writeboost.Table(backing, caching, m).create { s =>
+          pio.maxIOAmount = Sector.K(4) * 33 * 2
           pio.run(s)
           Thread.sleep(5000) // wait for injection
           pio.run(s)
-          s.status
+          val st = s.status.stat
+          assert(st(Writeboost.StatKey(false, true, false, true)) === 32)
         }
-        assert(st2.stat(Writeboost.StatKey(false, true, false, true)) === 32)
       }
     }
   }
