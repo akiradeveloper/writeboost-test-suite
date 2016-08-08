@@ -4,7 +4,40 @@ import dmtest._
 import dmtest.stack._
 
 class REPRO_138 extends DMTestSuite {
-  test("log rotates") {
+  test("write-caching") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(2)) { caching => // superblock + 2 segments
+        Writeboost.sweepCaches(caching)
+        Writeboost.Table(backing, caching).create { s =>
+          import PatternedSeqIO._
+
+          val U = Sector.K(4) * 127
+
+          val writer = new PatternedSeqIO(Seq(Write(Sector.K(4))))
+
+          writer.startingOffset = U * 0
+          writer.maxIOAmount = U * 3
+          writer.run(s)
+          s.dropTransient()
+
+          // caches = [U2, U1]
+
+          val reader = new PatternedSeqIO(Seq(Read(Sector.K(4))))
+
+          reader.startingOffset = U * 0
+          reader.maxIOAmount = U * 1
+          reader.run(s)
+          assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 0)
+
+          reader.startingOffset = U * 2
+          reader.maxIOAmount = U * 1
+          reader.run(s)
+          assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 127)
+        }
+      }
+    }
+  }
+  test("read-caching") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(2)) { caching => // superblock + 2 segments
         Writeboost.sweepCaches(caching)
