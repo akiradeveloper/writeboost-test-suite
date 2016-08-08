@@ -12,10 +12,9 @@ class FaultInjectionTest extends DMTestSuite {
         Writeboost.sweepCaches(fast)
         Writeboost.Table(slow, fast).create { s =>
           slow.reload(Flakey.Table(_slow, 0, 1)) // should use _slow
-          fast.reload(Flakey.Table(_fast, 0, 1))
+          // fast.reload(Flakey.Table(_fast, 0, 1))
 
           // error detected from backing device
-          logger.info("reading")
           val st1 = s.status
           intercept[Exception] {
             s.bdev.read(Sector(0), Sector(7))
@@ -30,6 +29,32 @@ class FaultInjectionTest extends DMTestSuite {
           // assert(Shell.sync(s"timeout 10s dd if=/dev/urandom of=${s.bdev.path} oflag=direct bs=4k count=10000").isLeft)
 
           slow.reload(Linear.Table(_slow))
+          // fast.reload(Linear.Table(_fast))
+        } // can be removed (not blocked up)
+      }}
+    }}
+  }
+  test("read from caching") {
+        slowDevice(Sector.M(128)) { _slow => Linear.Table(_slow).create { slow =>
+      fastDevice(Sector.M(32)) { _fast => Linear.Table(_fast).create { fast =>
+        Writeboost.sweepCaches(fast)
+        Writeboost.Table(slow, fast).create { s =>
+          s.bdev.write(Sector(0), DataBuffer.random(4096))
+          s.dropTransient()
+
+          // slow.reload(Flakey.Table(_slow, 0, 1)) // should use _slow
+          fast.reload(Flakey.Table(_fast, 0, 1))
+
+          // error detected from caching device
+          val st1 = s.status
+          intercept[Exception] {
+            s.bdev.read(Sector(0), Sector(8))
+          }
+          val st2 = s.status
+          val key = Writeboost.StatKey(false, true, false, true) // fullsize read from caching
+          assert(st2.stat(key) > st1.stat(key))
+
+          // slow.reload(Linear.Table(_slow))
           fast.reload(Linear.Table(_fast))
         } // can be removed (not blocked up)
       }}
