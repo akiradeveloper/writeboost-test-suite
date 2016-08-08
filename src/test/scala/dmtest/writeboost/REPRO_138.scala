@@ -50,31 +50,32 @@ class REPRO_138 extends DMTestSuite {
           reader.startingOffset = U * 0
           reader.maxIOAmount = U * 1
           reader.run(s)
-          Thread.sleep(10000) // wait for injection
-          s.dropTransient()
+          Thread.sleep(5000) // wait for injection
 
           reader.startingOffset = U * 1
           reader.maxIOAmount = U * 1
           reader.run(s)
-          Thread.sleep(10000) // wait for injection
-          s.dropTransient()
+          Thread.sleep(5000) // wait for injection
 
           reader.startingOffset = U * 2
           reader.maxIOAmount = U * 1
           reader.run(s)
-          Thread.sleep(10000) // wait for injection
-          s.dropTransient()
+          Thread.sleep(5000) // wait for injection
 
-          // caches = [U2, U1]
+          // caches = [U2!, U1] (! = on rambuf)
 
           reader.startingOffset = U * 0
           reader.maxIOAmount = U * 1
           reader.run(s)
           assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 0)
-          Thread.sleep(10000) // wait for injection
-          s.dropTransient()
+          Thread.sleep(5000) // wait for injection
 
-          // caches = [U2, U0]
+          // caches = [U2, U0!]
+
+          reader.startingOffset = U * 0
+          reader.maxIOAmount = U * 1
+          reader.run(s)
+          assert(s.status.stat(Writeboost.StatKey(false, true, true, true)) === 127)
 
           reader.startingOffset = U * 2
           reader.maxIOAmount = U * 1
