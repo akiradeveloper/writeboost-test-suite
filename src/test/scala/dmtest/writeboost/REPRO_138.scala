@@ -18,7 +18,7 @@ class REPRO_138 extends DMTestSuite {
           writer.startingOffset = U * 0
           writer.maxIOAmount = U * 3
           writer.run(s)
-          s.dropTransient()
+          Thread.sleep(10000) // wait for flush
 
           // caches = [U2, U1]
 
@@ -52,7 +52,6 @@ class REPRO_138 extends DMTestSuite {
           reader.maxIOAmount = U * 3
           reader.run(s)
           Thread.sleep(10000) // wait for injection
-          s.dropTransient()
 
           // caches = [U2, U1]
 
@@ -61,7 +60,6 @@ class REPRO_138 extends DMTestSuite {
           reader.run(s)
           assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 0)
           Thread.sleep(10000) // wait for injection
-          s.dropTransient()
 
           // caches = [U2, U0]
 
