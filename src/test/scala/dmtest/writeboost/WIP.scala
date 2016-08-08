@@ -16,15 +16,16 @@ class WIP extends DMTestSuite {
           val U = Sector.K(4) * 127 * 2
 
           val reader = new PatternedSeqIO(Seq(Read(Sector.K(4)), Skip(Sector.K(4))))
-          reader.startingOffset = Sector(0)
+
+          reader.startingOffset = U * 0
           reader.maxIOAmount = U * 3
-          reader.run(s) // stage all read date into the cells
+          reader.run(s)
           Thread.sleep(10000) // wait for injection
           s.dropTransient()
 
           // caches = [U2, U1]
 
-          reader.startingOffset = Sector(0)
+          reader.startingOffset = U * 0
           reader.maxIOAmount = U * 1
           reader.run(s)
           assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 0)
