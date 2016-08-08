@@ -5,7 +5,7 @@ import dmtest.stack._
 
 class REPRO_122 extends DMTestSuite {
   // ignore because the param isn't implemented yet
-  ignore("nr_read_cache_cells works") {
+  test("nr_read_cache_cells works") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)
@@ -19,6 +19,7 @@ class REPRO_122 extends DMTestSuite {
           pio.run(s)
           Thread.sleep(5000)
           pio.run(s)
+          s.dropTransient()
           val st = s.status.stat
           assert(st(Writeboost.StatKey(false, true, false, true)) === 0)
         }
@@ -28,6 +29,7 @@ class REPRO_122 extends DMTestSuite {
           pio.run(s)
           Thread.sleep(5000) // wait for injection
           pio.run(s)
+          s.dropTransient()
           val st = s.status.stat
           assert(st(Writeboost.StatKey(false, true, false, true)) === 32)
         }
