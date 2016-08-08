@@ -22,7 +22,7 @@ class WIP extends DMTestSuite {
           Thread.sleep(10000) // wait for injection
           s.dropTransient()
 
-          // caches = [U1, U2]
+          // caches = [U2, U1]
 
           reader.startingOffset = Sector(0)
           reader.maxIOAmount = U * 1

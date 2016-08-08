@@ -26,6 +26,17 @@ class REPRO_122 extends DMTestSuite {
         }
 
         Writeboost.Table(backing, caching, m).create { s =>
+          pio.maxIOAmount = Sector.K(4) * 32 * 2
+          pio.run(s)
+          Thread.sleep(5000) // wait for injection
+
+          s.dropTransient()
+          pio.run(s)
+          val st = s.status.stat
+          assert(st(Writeboost.StatKey(false, true, false, true)) === 32)
+        }
+
+        Writeboost.Table(backing, caching, m).create { s =>
           pio.maxIOAmount = Sector.K(4) * 33 * 2
           pio.run(s)
           Thread.sleep(5000) // wait for injection
