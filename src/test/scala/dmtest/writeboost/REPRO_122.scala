@@ -18,8 +18,9 @@ class REPRO_122 extends DMTestSuite {
           pio.maxIOAmount = Sector.K(4) * 31 * 2
           pio.run(s)
           Thread.sleep(5000)
-          pio.run(s)
+
           s.dropTransient()
+          pio.run(s)
           val st = s.status.stat
           assert(st(Writeboost.StatKey(false, true, false, true)) === 0)
         }
@@ -28,8 +29,9 @@ class REPRO_122 extends DMTestSuite {
           pio.maxIOAmount = Sector.K(4) * 33 * 2
           pio.run(s)
           Thread.sleep(5000) // wait for injection
-          pio.run(s)
+
           s.dropTransient()
+          pio.run(s)
           val st = s.status.stat
           assert(st(Writeboost.StatKey(false, true, false, true)) === 32)
         }
