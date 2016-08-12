@@ -4,6 +4,31 @@ import dmtest._
 import dmtest.stack._
 
 class WriteAroundCachingTest extends DMTestSuite {
+  test("read-hit and assert") {
+    slowDevice(Sector.G(1)) { backing =>
+      fastDevice(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching,
+          Map("nr_read_cache_cells" -> 1, "write_around_mode" -> 1, "read_cache_threshold" -> 1))
+        table.create { s =>
+          val orig = DataBuffer.random(4096)
+          s.bdev.write(Sector.K(4), orig)
+          assert(s.status.stat(Writeboost.StatKey(true, false, false, true)) === 1)
+
+          val read1 = s.bdev.read(Sector.K(4), Sector.K(4))
+          assert(s.status.stat(Writeboost.StatKey(false, false, false, true)) === 1)
+          assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 0)
+          assert(read1 isSameAs orig)
+          Thread.sleep(5000) // wait for injection
+          s.dropTransient()
+
+          val read2 = s.bdev.read(Sector.K(4), Sector.K(4))
+          assert(s.status.stat(Writeboost.StatKey(false, true, false, true)) === 1)
+          assert(read2 isSameAs orig)
+        }
+      }
+    }
+  }
   test("read caching work") {
     slowDevice(Sector.G(1)) { backing =>
       fastDevice(Sector.M(32)) { caching =>
