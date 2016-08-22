@@ -10,8 +10,9 @@ class REPRO_144 extends DMTestSuite {
         Writeboost.sweepCaches(caching)
         Writeboost.Table(backing, caching).create { s =>
           s.bdev.write(Sector(0), DataBuffer.random(Sector.M(64).toB.toInt))
+          s.dropTransient()
           s.dropCaches()
-          assert(s.status.lastFlushedId === s.status.lastWritebackId + 1)
+          assert(s.status.lastFlushedId === s.status.lastWritebackId)
           s.dm.message("update_sb_record_interval 1")
           Thread.sleep(5000) // wait for updating the sb record
         }
