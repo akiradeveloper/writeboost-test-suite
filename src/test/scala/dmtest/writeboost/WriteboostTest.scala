@@ -18,5 +18,7 @@ class WriteboostTest extends Suites(
   new REPRO_118,
   new REPRO_122,
   new REPRO_132,
-  new REPRO_138
+  new REPRO_138,
+  new REPRO_144,
+  new REPRO_147
 )

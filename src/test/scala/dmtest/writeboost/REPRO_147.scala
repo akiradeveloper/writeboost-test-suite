@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class REPRO_147 extends DMTestSuite {
-  test("nr_cur_batched_writeback adaptively shrinks") {
+  ignore("nr_cur_batched_writeback adaptively shrinks") {
     slowDevice(Sector.G(1)) { backing =>
       Memory(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)
