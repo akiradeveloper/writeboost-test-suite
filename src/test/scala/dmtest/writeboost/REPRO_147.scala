@@ -29,7 +29,36 @@ class REPRO_147 extends DMTestSuite {
               b = true
           }
           assert(b)
+
           Await.ready(writer, Duration.Inf)
+        }
+      }
+    }
+  }
+  // degradation check
+  test("writeback should be full throttle when there are many empty segs") {
+    slowDevice(Sector.G(1)) { backing =>
+      Memory(Sector.M(32)) { caching =>
+        Writeboost.sweepCaches(caching)
+        val table = Writeboost.Table(backing, caching, Map("nr_max_batched_writeback" -> 16))
+        table.create { s =>
+          s.bdev.write(Sector(0), DataBuffer.random(Sector.M(32).toB.toInt))
+          s.dm.message("writeback_threshold 100")
+
+          s.dropTransient()
+          def complt: Boolean = {
+            val st = s.status
+            st.lastWritebackId == st.lastFlushedId
+          }
+
+          var b = false
+          while (!complt && !b) {
+            logger.debug(s"n=${s.status.tunables("nr_cur_batched_writeback")}")
+            if (s.status.tunables("nr_cur_batched_writeback") == 16)
+              b = true
+          }
+
+          assert(b)
         }
       }
     }
