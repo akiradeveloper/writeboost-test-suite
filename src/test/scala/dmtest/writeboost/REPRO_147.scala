@@ -24,10 +24,11 @@ class REPRO_147 extends DMTestSuite {
           var b = false
           while (!writer.isCompleted) {
             logger.debug(s"n=${s.status.tunables("nr_cur_batched_writeback")}")
-            if (s.status.tunables("nr_cur_batched_writeback") < 8)
+            if (s.status.tunables("nr_cur_batched_writeback") == 1)
               b = true
           }
           assert(b)
+          Thread.sleep(1)
         }
       }
     }
