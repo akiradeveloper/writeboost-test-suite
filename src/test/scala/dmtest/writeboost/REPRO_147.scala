@@ -16,15 +16,17 @@ class REPRO_147 extends DMTestSuite {
           s.bdev.write(Sector(0), DataBuffer.random(Sector.M(32).toB.toInt))
 
           val writer = Future {
-            val data = DataBuffer.random(Sector.M(256).toB.toInt)
+            val data = DataBuffer.random(Sector.M(128).toB.toInt)
             s.bdev.write(Sector(0), data)
           }
 
           s.dm.message("writeback_threshold 100")
           var b = false
-          while (!writer.isCompleted)
+          while (!writer.isCompleted) {
+            logger.debug(s"n=${s.status.tunables("nr_cur_batched_writeback")}")
             if (s.status.tunables("nr_cur_batched_writeback") < 8)
               b = true
+          }
           assert(b)
         }
       }
