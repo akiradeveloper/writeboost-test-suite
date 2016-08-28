@@ -4,7 +4,8 @@ import dmtest._
 import dmtest.stack._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 class REPRO_147 extends DMTestSuite {
   test("nr_cur_batched_writeback adaptively shrinks") {
@@ -22,13 +23,13 @@ class REPRO_147 extends DMTestSuite {
 
           s.dm.message("writeback_threshold 100")
           var b = false
-          while (!writer.isCompleted) {
+          while (!writer.isCompleted && !b) {
             logger.debug(s"n=${s.status.tunables("nr_cur_batched_writeback")}")
             if (s.status.tunables("nr_cur_batched_writeback") == 1)
               b = true
           }
           assert(b)
-          Thread.sleep(1)
+          Await.ready(writer, Duration.Inf)
         }
       }
     }
