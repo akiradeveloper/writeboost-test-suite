@@ -10,7 +10,7 @@ import scala.concurrent.{Await, Future}
 class REPRO_147 extends DMTestSuite {
   test("nr_cur_batched_writeback adaptively shrinks") {
     slowDevice(Sector.G(1)) { backing =>
-      Memory(Sector.M(32)) { caching =>
+      fastDevice(Sector.M(32)) { caching =>
         Writeboost.sweepCaches(caching)
         val table = Writeboost.Table(backing, caching, Map("nr_max_batched_writeback" -> 16))
         table.create { s =>
@@ -38,12 +38,12 @@ class REPRO_147 extends DMTestSuite {
   // degradation check
   test("writeback should recover full throttle") {
     slowDevice(Sector.G(1)) { backing =>
-      fastDevice(Sector.M(64)) { caching =>
+      fastDevice(Sector.M(128)) { caching =>
         Writeboost.sweepCaches(caching)
         val table = Writeboost.Table(backing, caching, Map("nr_max_batched_writeback" -> 8))
         table.create { s =>
           // fullfill the caching device
-          s.bdev.write(Sector(0), DataBuffer.random(Sector.M(64).toB.toInt))
+          s.bdev.write(Sector(0), DataBuffer.random(Sector.M(128).toB.toInt))
           s.dm.message("writeback_threshold 100")
 
           s.dropTransient()
