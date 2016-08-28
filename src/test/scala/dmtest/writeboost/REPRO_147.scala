@@ -42,7 +42,7 @@ class REPRO_147 extends DMTestSuite {
         Writeboost.sweepCaches(caching)
         val table = Writeboost.Table(backing, caching, Map("nr_max_batched_writeback" -> 8))
         table.create { s =>
-          s.bdev.write(Sector(0), DataBuffer.random(Sector.M(32).toB.toInt))
+          s.bdev.write(Sector(0), DataBuffer.random(Sector.M(64).toB.toInt))
           s.dm.message("writeback_threshold 100")
 
           s.dropTransient()
