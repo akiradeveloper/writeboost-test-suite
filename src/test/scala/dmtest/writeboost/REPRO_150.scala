@@ -14,8 +14,9 @@ class REPRO_150 extends DMTestSuite {
         fs.XFS.Mount(backing) { mnt =>
           val scriptDir = mnt.resolve("scripts")
           Files.createDirectories(scriptDir)
-          val script = new File(getClass.getClassLoader.getResource("REPRO_150_script.sh").getFile).toPath
-          Files.copy(script, scriptDir.resolve("script.sh"))
+          val scriptResource = new File(getClass.getClassLoader.getResource("REPRO_150_script.sh").getFile).toPath
+          val script = scriptDir.resolve("script.sh")
+          Files.copy(scriptResource, script)
           Shell.at(scriptDir) { "sh script.sh" }
           // delete script/ otherwise later sha1sum fails
           Files.delete(script)
