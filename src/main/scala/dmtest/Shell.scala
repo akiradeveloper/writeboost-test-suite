@@ -25,5 +25,9 @@ object Shell {
     }
   }
   def at(cwd: Path, quiet: Boolean = false)(cmd: String) = apply(Process(cmd, cwd.toFile), quiet)
+  def runScript(script: String) = {
+    val f = TempFile.text(script)
+    apply(s"sh ${f}")
+  }
 }
 

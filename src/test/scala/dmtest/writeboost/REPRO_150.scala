@@ -30,10 +30,22 @@ class REPRO_150 extends DMTestSuite {
         Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127)).create { s =>
           s.status
           fs.XFS.Mount(s) { mnt =>
-            Shell.at(mnt) { "cat *" } // stage
+            Shell.runScript {
+              s"""
+                  cd ${mnt}
+                  cat ./*
+                  cd -
+              """.stripMargin
+            }
             Kernel.dropCaches
             s.status
-            Shell.at(mnt) { "sha1sum *" } // re-read
+            Shell.runScript {
+              s"""
+                  cd ${mnt}
+                  sha1sum ./*
+                  cd -
+              """.stripMargin
+            }
             s.status
           }
         }
