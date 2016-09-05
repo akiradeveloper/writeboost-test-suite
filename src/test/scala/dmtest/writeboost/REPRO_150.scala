@@ -32,18 +32,18 @@ class REPRO_150 extends DMTestSuite {
           fs.XFS.Mount(s) { mnt =>
             Shell.runScript {
               s"""
-                  cd ${mnt}
-                  cat ./* > /dev/null
-                  cd -
+                  cd ${mnt};
+                  cat ./* > /dev/null;
+                  cd -;
               """.stripMargin
             }
             Kernel.dropCaches
             s.status
             Shell.runScript {
               s"""
-                  cd ${mnt}
-                  sha1sum ./* > /tmp/sha1sum_new.out
-                  cd -
+                  cd ${mnt};
+                  sha1sum ./* > /tmp/sha1sum_new.out;
+                  cd -;
               """.stripMargin
             }
             s.status
