@@ -33,8 +33,7 @@ class REPRO_150 extends DMTestSuite {
             Shell.runScript {
               s"""
                   cd ${mnt}
-                  ls
-                  cat ./*
+                  cat ./* > /dev/null
                   cd -
               """.stripMargin
             }
@@ -43,7 +42,7 @@ class REPRO_150 extends DMTestSuite {
             Shell.runScript {
               s"""
                   cd ${mnt}
-                  sha1sum ./*
+                  sha1sum ./* > /tmp/sha1sum_new.out
                   cd -
               """.stripMargin
             }
