@@ -33,6 +33,7 @@ class REPRO_150 extends DMTestSuite {
             Shell.runScript {
               s"""
                   cd ${mnt}
+                  ls
                   cat ./*
                   cd -
               """.stripMargin
