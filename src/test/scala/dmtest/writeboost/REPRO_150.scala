@@ -17,7 +17,24 @@ class REPRO_150 extends DMTestSuite {
           val script = new File(getClass.getClassLoader.getResource("REPRO_150_script.sh").getFile).toPath
           Files.copy(script, scriptDir.resolve("script.sh"))
           Shell.at(scriptDir) { "sh script.sh" }
-          Shell.at(scriptDir) { "ls"}
+          // delete script/ otherwise later sha1sum fails
+          Files.delete(script)
+          Files.delete(scriptDir)
+
+          Shell("sync")
+        }
+
+        Writeboost.sweepCaches(caching)
+        Shell("sync")
+        Writeboost.Table(backing, caching, Map("read_cache_threshold" -> 127)).create { s =>
+          s.status
+          fs.XFS.Mount(s) { mnt =>
+            Shell.at(mnt) { "cat ./*" } // stage
+            Kernel.dropCaches
+            s.status
+            Shell.at(mnt) { "sha1sum ./*" } // re-read
+            s.status
+          }
         }
       }
     }
