@@ -15,11 +15,13 @@ class WIP extends DMTestSuite {
 
           val reader = new PatternedSeqIO(Seq(Read(Sector.K(4)), Skip(Sector.K(4))))
           reader.maxIOAmount = Sector.M(30)
+
+          reader.startingOffset = Sector(0)
           reader.run(s)
 
           Thread.sleep(5000)
 
-          reader.maxIOAmount = Sector.M(30)
+          reader.startingOffset = Sector.M(30)
           reader.run(s)
 
           assert(s.status.currentId > s.status.nrSegments)
