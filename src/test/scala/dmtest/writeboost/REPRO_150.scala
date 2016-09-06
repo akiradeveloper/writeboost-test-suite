@@ -57,8 +57,8 @@ class REPRO_150 extends DMTestSuite {
   test("with device file") {
     slowDevice(Sector.M(100)) { backing =>
       fastDevice(Sector.M(10)) { caching =>
-        Shell.runScript { s"""scrub -pcustom\"DATA\" -S ${backing.bdev.path}""" }
-        Shell.runScript { s"""scrub -pcustom\"CACHE\" -S ${caching.bdev.path}""" }
+        Shell.runScript { s"""scrub -pcustom=\"DATA\" -S ${backing.bdev.path}""" }
+        Shell.runScript { s"""scrub -pcustom=\"CACHE\" -S ${caching.bdev.path}""" }
 
         val baseline = TempFile.alloc()
         Shell.runScript { s"dd if=${backing.bdev.path} of=${baseline} bs=1M" }
@@ -77,13 +77,16 @@ class REPRO_150 extends DMTestSuite {
           Shell(s"dd if=${s.bdev.path} of=${o3} bs=1M")
         }
 
-        val h_baseline = Shell.sync(s"sha1sum ${baseline}")
-        val h_o1 = Shell.sync(s"sha1sum ${o1}")
-        assert(h_o1 === h_baseline)
-        val h_o2 = Shell.sync(s"sha1sum ${o2}")
-        assert(h_o2 === h_baseline)
-        val h_o3 = Shell.sync(s"sha1sum ${o3}")
-        assert(h_o3 === h_baseline)
+        def sha1sum(f: Path) = {
+          Shell.sync(s"sha1sum ${f}") match {
+            case Right(x) => x.split(" ")(0)
+          }
+        }
+
+        val h_baseline = sha1sum(baseline)
+        assert(sha1sum(o1) === h_baseline)
+        assert(sha1sum(o2) === h_baseline)
+        assert(sha1sum(o3) === h_baseline)
       }
     }
   }
