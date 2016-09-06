@@ -57,8 +57,8 @@ class REPRO_150 extends DMTestSuite {
   test("with device file") {
     slowDevice(Sector.M(100)) { backing =>
       fastDevice(Sector.M(10)) { caching =>
-        Shell.runScript { s"scrub -pcustom\"DATA\" -S ${backing}" }
-        Shell.runScript { s"scrub -pcustom\"CACHE\" -S ${caching}" }
+        Shell.runScript { s"""scrub -pcustom\"DATA\" -S ${backing}""" }
+        Shell.runScript { s"""scrub -pcustom\"CACHE\" -S ${caching}""" }
 
         val baseline = TempFile.alloc()
         Shell.runScript { s"dd if=${backing.bdev.path} of=${baseline} bs=1M" }
