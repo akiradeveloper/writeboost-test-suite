@@ -69,20 +69,21 @@ class REPRO_150 extends DMTestSuite {
         val o1 = TempFile.alloc()
         val o2 = TempFile.alloc()
         val o3 = TempFile.alloc()
-        Writeboost.Table(backing, caching, Map("write_around_mode" -> 1, "read_cache_threshold" -> 127)).create { s =>
+        Writeboost.Table(backing, caching, Map("write_around_mode" -> 1)).create { s =>
+          s.dm.message("read_cache_threshold 127")
           val key = Writeboost.StatKey(false, true, false, true)
           val s1 = s.status.stat(key)
           Shell(s"dd if=${s.bdev.path} iflag=direct of=${o1} bs=1M")
           val s2 = s.status.stat(key)
-          // assert(s2 === s1)
+          assert(s2 === s1)
           Kernel.dropCaches
           Shell(s"dd if=${s.bdev.path} iflag=direct of=${o2} bs=1M")
           val s3 = s.status.stat(key)
-          // assert(s3 > s2)
+          assert(s3 > s2)
           Kernel.dropCaches
           Shell(s"dd if=${s.bdev.path} iflag=direct of=${o3} bs=1M")
           val s4 = s.status.stat(key)
-          // assert(s4 > s3)
+          assert(s4 > s3)
         }
 
         def sha1sum(f: Path) = {
