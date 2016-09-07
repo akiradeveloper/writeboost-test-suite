@@ -9,8 +9,8 @@ import dmtest.stack._
 class REPRO_150 extends DMTestSuite {
   // not reproduced
   ignore("with filesystem") {
-    slowDevice(Sector.G(10)) { backing =>
-      fastDevice(Sector.G(1)) { caching =>
+    Memory(Sector.G(1)) { backing =>
+      Memory(Sector.M(100)) { caching =>
         fs.XFS.format(backing)
         fs.XFS.Mount(backing) { mnt =>
           val scriptDir = mnt.resolve("scripts")
@@ -55,8 +55,8 @@ class REPRO_150 extends DMTestSuite {
   }
 
   test("with device file") {
-    slowDevice(Sector.M(100)) { backing =>
-      fastDevice(Sector.M(10)) { caching =>
+    Memory(Sector.M(100)) { backing =>
+      Memory(Sector.M(10)) { caching =>
         Shell.runScript { s"""scrub -pcustom=\"DATA\" -S ${backing.bdev.path}""" }
         Shell.runScript { s"""scrub -pcustom=\"CACHE\" -S ${caching.bdev.path}""" }
 
