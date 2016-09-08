@@ -7,8 +7,8 @@ import dmtest.stack._
 class REPRO_111 extends DMTestSuite {
   // not reproduced yet
   test("luks on top of writeboost") {
-    slowDevice(Sector.M(100)) { backing =>
-      fastDevice(Sector.M(10)) { caching =>
+    Memory(Sector.M(100)) { backing =>
+      Memory(Sector.M(10)) { caching =>
         Writeboost.sweepCaches(caching)
         val options = Map(
           "read_cache_threshold" -> 1
