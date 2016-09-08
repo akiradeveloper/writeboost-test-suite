@@ -47,7 +47,7 @@ class REPRO_111 extends DMTestSuite {
       }
     }
   }
-  test("encrypted backing") {
+  ignore("encrypted backing") {
     slowDevice(Sector.G(1)) { backing =>
       Luks.format(backing)
       Luks(backing) { luks => // open
