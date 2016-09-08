@@ -8,21 +8,22 @@ class REPRO_111 extends DMTestSuite {
   // not reproduced yet
   test("luks on top of writeboost") {
     Memory(Sector.M(100)) { backing =>
-      Memory(Sector.M(10)) { caching =>
+      Memory(Sector.M(100)) { caching =>
         Writeboost.sweepCaches(caching)
         val options = Map(
-          "read_cache_threshold" -> 1
+          "read_cache_threshold" -> 127,
+          "write_around_mode" -> 1,
+          "nr_read_cache_cells" -> 8
         )
         Writeboost.Table(backing, caching, options).create { wb =>
           Luks.format(wb)
           Luks(wb) { s =>
             EXT4.format(s)
+            wb.status
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
+            wb.status
             Shell(s"fsck.ext4 -fn ${s.bdev.path}")
-//            EXT4.Mount(s) { mp =>
-//            }
-//            EXT4.Mount(s) { mp =>
-//            }
+            wb.status
           }
         }
       }
