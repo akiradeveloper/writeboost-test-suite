@@ -5,7 +5,7 @@ import dmtest.stack._
 import dmtest.fs._
 
 class REPRO_115 extends DMTestSuite {
-  test("making another device while in use (backing)") {
+  ignore("making another device while in use (backing)") {
     slowDevice(Sector.M(64)) { backing =>
       fastDevice(Sector.M(8)) { caching1 =>
         Writeboost.sweepCaches(caching1)
@@ -21,7 +21,7 @@ class REPRO_115 extends DMTestSuite {
       }
     }
   }
-  test("making another device while in use (caching)") {
+  ignore("making another device while in use (caching)") {
     fastDevice(Sector.M(8)) { caching =>
       slowDevice(Sector.M(64)) { backing1 =>
         slowDevice(Sector.M(64)) { backing2 =>
