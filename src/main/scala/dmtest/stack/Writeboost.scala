@@ -91,6 +91,8 @@ object Writeboost {
   )
 }
 case class Writeboost(delegate: DMStack, table: Writeboost.Table) extends DMStackDecorator[Writeboost] {
+  override def onReloaded(): Unit = { clearStats() }
+
   // drop all transient data in the ram buffer to the caching device
   // suspend + resume is used dm-wide to resolve all remaining transient data.
   def dropTransient(): Unit = {
